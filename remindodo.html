@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>remindodo</title>
+    <link rel="stylesheet" href="diary.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-top-row">
+                <div class="header-title-block">
+                    <h1 class="title" id="page-title">remindodo</h1>
+                    <p class="subtitle">やりたいことを、やりたいタイミングで。⏰</p>
+                    <p class="user-name-display" id="user-name-display"></p>
+                    <div style="margin-top: 10px;">
+                        <button id="logout-btn" class="btn btn-master" type="button" style="font-size: 0.9rem; padding: 6px 12px;">ログアウト</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="diary-wrapper" id="todo-wrapper">
+            <div class="diary-editor">
+                <div class="editor-header">
+                    <h2>新しいタスクを追加</h2>
+                </div>
+                <div class="editor-content">
+                    <input
+                        type="text"
+                        id="todo-text"
+                        class="master-input todo-text-input"
+                        placeholder="やりたいことを書いてみよう ✍️">
+
+                    <div class="todo-options-row">
+                        <div class="master-field todo-remind-field">
+                            <label for="todo-remind-at">リマインドする時間（必要なときだけ）</label>
+                            <input
+                                type="datetime-local"
+                                id="todo-remind-at"
+                                class="master-input">
+                        </div>
+
+                        <div class="master-field todo-track-field">
+                            <label>
+                                <input type="checkbox" id="todo-track-time" style="margin-right: 6px;">
+                                このタスクの作業時間をはかる
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="button-group" style="margin-top: 16px;">
+                        <button id="add-todo-btn" class="btn btn-save">タスクを追加</button>
+                        <button id="clear-todo-form-btn" class="btn btn-clear">入力をクリア</button>
+                    </div>
+                </div>
+                <div class="priority-wrapper">
+                    <div class="priority-header">
+                        <h3>今日の順番</h3>
+                        <p class="priority-helper-text">「順番を付ける」モードで番号をつけたタスクだけがここに並びます。</p>
+                    </div>
+                    <ol id="priority-entries" class="priority-entries">
+                        <!-- 優先度付きタスクがここに表示されます -->
+                    </ol>
+                </div>
+            </div>
+
+            <div class="diary-list">
+                <div class="list-header">
+                    <h2>remindodo リスト</h2>
+                    <div class="list-header-actions">
+                        <button id="go-diary-btn" class="btn btn-master" type="button">日記ページへ</button>
+                        <button id="reorder-todos-btn" class="btn btn-master" type="button">順番を整理する</button>
+                        <button id="priority-mode-btn" class="btn btn-master" type="button">順番を付ける</button>
+                    </div>
+                </div>
+                <div id="todo-entries" class="entries">
+                    <!-- ToDoエントリーがここに表示されます -->
+                </div>
+                <div class="list-footer-actions">
+                    <button id="clear-all-todos-btn" class="btn btn-delete-all" type="button">すべて削除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="remindodo.js"></script>
+</body>
+</html>
+
+

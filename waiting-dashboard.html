@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>待ち時間ダッシュボード - WonderPasNavi</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="diary.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dashboard-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .dashboard-header h1 {
+            font-size: 0.4em; /* 2emの5分の1 = 0.4em */
+            color: #c46d96;
+            margin-bottom: 2px; /* 10pxの5分の1 = 2px */
+        }
+        
+        .park-tabs {
+            display: flex;
+            gap: 2px; /* 10pxの5分の1 = 2px */
+            margin-top: 4px; /* 20pxの5分の1 = 4px */
+        }
+        
+        .park-tab {
+            padding: 2.4px 4.8px; /* 12px 24pxの5分の1 = 2.4px 4.8px */
+            background: rgba(196, 109, 150, 0.1);
+            border: 0.4px solid rgba(196, 109, 150, 0.3); /* 2pxの5分の1 = 0.4px */
+            border-radius: 1.6px; /* 8pxの5分の1 = 1.6px */
+            cursor: pointer;
+            font-size: 0.22em; /* 1.1emの5分の1 = 0.22em */
+            font-weight: 500;
+            color: #c46d96;
+            transition: all 0.3s ease;
+        }
+        
+        .park-tab:hover {
+            background: rgba(196, 109, 150, 0.2);
+            border-color: rgba(196, 109, 150, 0.5);
+        }
+        
+        .park-tab.active {
+            background: #c46d96;
+            color: white;
+            border-color: #c46d96;
+        }
+        
+        .park-content {
+            display: none;
+        }
+        
+        .park-content.active {
+            display: block;
+        }
+        
+        .status-info {
+            margin-top: 3px; /* 15pxの5分の1 = 3px */
+            padding: 2.4px; /* 12pxの5分の1 = 2.4px */
+            background: rgba(196, 109, 150, 0.05);
+            border-radius: 1.6px; /* 8pxの5分の1 = 1.6px */
+            font-size: 0.18em; /* 0.9emの5分の1 = 0.18em */
+            color: #666;
+        }
+        
+        .language-links {
+            text-align: right;
+            margin-bottom: 5px;
+        }
+        
+        .language-links a {
+            margin: 0 3px;
+            color: #5a5a5a;
+            text-decoration: none;
+            font-size: 0.16em;
+            cursor: pointer;
+        }
+        
+        .language-links a:hover {
+            color: #c46d96;
+        }
+        
+        .language-links a.active {
+            font-weight: bold;
+            color: #c46d96;
+        }
+        
+        .route-optimizer-link {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 4px 8px;
+            background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.18em;
+            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .route-optimizer-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.6);
+            background: linear-gradient(135deg, #FF8FA3 0%, #D65A7A 100%);
+        }
+        
+        .route-optimizer-link:active {
+            transform: translateY(0);
+        }
+        
+        .graphs-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr); /* デスクトップで8列 */
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .graph-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            min-width: 0; /* グリッド内で均等に配置 */
+            width: 100%; /* グリッドセルいっぱいに広がる */
+        }
+        
+        .graph-card h3 {
+            font-size: 0.68em; /* 0.85emの80% = 0.68em */
+            color: #c46d96;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(196, 109, 150, 0.2);
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            /* 改行を許可して全文を表示（最大2行） */
+            white-space: normal;
+            min-height: 2.8em; /* 2行分の高さを確保 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* 最大2行まで表示 */
+            line-clamp: 2; /* 標準プロパティ */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .graph-container {
+            position: relative;
+            height: 200px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #d26b8c;
+        }
+        
+        @media (max-width: 1400px) {
+            .graphs-grid {
+                grid-template-columns: repeat(6, 1fr); /* 中サイズ画面で6列 */
+            }
+        }
+        
+        @media (max-width: 1000px) {
+            .graphs-grid {
+                grid-template-columns: repeat(4, 1fr); /* 小さめの画面で4列 */
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .graphs-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px; /* スマホでは間隔を狭める */
+            }
+            
+            .graph-card {
+                padding: 6px; /* スマホではパディングを小さく */
+            }
+            
+            .graph-card h3 {
+                font-size: 0.56em; /* 0.7emの80% = 0.56em */
+                min-height: 2.2em; /* スマホでは高さを調整 */
+            }
+            
+            .graph-container {
+                height: 120px; /* 150pxの80% = 120px */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .graphs-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 5px; /* さらに間隔を狭める */
+            }
+            
+            .graph-card {
+                padding: 5px;
+            }
+            
+            .graph-card h3 {
+                font-size: 0.52em; /* 0.65emの80% = 0.52em */
+                min-height: 2em;
+            }
+            
+            .graph-container {
+                height: 112px; /* 140pxの80% = 112px */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="language-links" id="languageLinks">
+                <a href="#" onclick="event.preventDefault(); setLanguage('ja'); return false;" data-lang="ja">日本語</a>
+                <a href="#" onclick="event.preventDefault(); setLanguage('zh'); return false;" data-lang="zh">中文</a>
+                <a href="#" onclick="event.preventDefault(); setLanguage('en'); return false;" data-lang="en">English</a>
+                <a href="#" onclick="event.preventDefault(); setLanguage('ko'); return false;" data-lang="ko">한국어</a>
+            </div>
+            <h1 data-i18n="dashboard-title">待ち時間ダッシュボード</h1>
+            <a href="route-optimizer.html" class="route-optimizer-link" data-i18n="route-optimizer-link">🛣️ ルート最適化</a>
+            <div class="park-tabs">
+                <button class="park-tab active" data-park="land" data-i18n="park-land">東京ディズニーランド</button>
+                <button class="park-tab" data-park="sea" data-i18n="park-sea">東京ディズニーシー</button>
+            </div>
+            <div class="status-info" id="status-info" data-i18n="loading">
+                データを読み込み中...
+            </div>
+        </div>
+        
+        <div id="land-content" class="park-content active">
+            <div class="graphs-grid" id="land-graphs">
+                <div class="loading" data-i18n="loading">データを読み込み中...</div>
+            </div>
+        </div>
+        
+        <div id="sea-content" class="park-content">
+            <div class="graphs-grid" id="sea-graphs">
+                <div class="loading" data-i18n="loading">データを読み込み中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        // 多言語対応の翻訳データ
+        const i18n = {
+            ja: {
+                'dashboard-title': '待ち時間ダッシュボード',
+                'park-land': '東京ディズニーランド',
+                'park-sea': '東京ディズニーシー',
+                'loading': 'データを読み込み中...',
+                'data-loaded': 'データ取得完了',
+                'attractions': 'アトラクション',
+                'last-updated': '最終更新',
+                'waiting-time': '待ち時間',
+                'minutes': '分',
+                'error': 'エラーが発生しました',
+                'no-data': 'データがありません',
+                'route-optimizer-link': '🛣️ ルート最適化'
+            },
+            zh: {
+                'dashboard-title': '等待时间仪表板',
+                'park-land': '东京迪士尼乐园',
+                'park-sea': '东京迪士尼海洋',
+                'loading': '正在加载数据...',
+                'data-loaded': '数据获取完成',
+                'attractions': '景点',
+                'last-updated': '最后更新',
+                'waiting-time': '等待时间',
+                'minutes': '分钟',
+                'error': '发生错误',
+                'no-data': '没有数据',
+                'route-optimizer-link': '🛣️ 路线规划'
+            },
+            en: {
+                'dashboard-title': 'Wait Time Dashboard',
+                'park-land': 'Tokyo Disneyland',
+                'park-sea': 'Tokyo DisneySea',
+                'loading': 'Loading data...',
+                'data-loaded': 'Data loaded',
+                'attractions': 'attractions',
+                'last-updated': 'Last updated',
+                'waiting-time': 'Wait time',
+                'minutes': 'min',
+                'error': 'An error occurred',
+                'no-data': 'No data available',
+                'route-optimizer-link': '🛣️ Route Optimizer'
+            },
+            ko: {
+                'dashboard-title': '대기 시간 대시보드',
+                'park-land': '도쿄 디즈니랜드',
+                'park-sea': '도쿄 디즈니시',
+                'loading': '데이터 로딩 중...',
+                'data-loaded': '데이터 가져오기 완료',
+                'attractions': '어트랙션',
+                'last-updated': '마지막 업데이트',
+                'waiting-time': '대기 시간',
+                'minutes': '분',
+                'error': '오류가 발생했습니다',
+                'no-data': '데이터가 없습니다',
+                'route-optimizer-link': '🛣️ 루트 최적화'
+            }
+        };
+        
+        // 現在の言語を取得（デフォルトは日本語）
+        let currentLanguage = localStorage.getItem('language') || 'ja';
+        
+        // グローバルに公開（waiting-dashboard.jsから参照できるように）
+        window.i18n = i18n;
+        window.currentLanguage = currentLanguage;
+        
+        // 言語を設定（グローバルスコープに公開）
+        window.setLanguage = function(lang) {
+            currentLanguage = lang;
+            window.currentLanguage = lang; // グローバル変数も更新
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+            applyLanguage();
+            updateLanguageLinks();
+            // グラフを再描画（言語変更時にグラフのラベルとアトラクション名を更新）
+            if (window.loadParkData) {
+                const activeTab = document.querySelector('.park-tab.active');
+                if (activeTab) {
+                    const park = activeTab.dataset.park;
+                    window.loadParkData(park);
+                }
+            }
+        };
+        
+        // 言語リンクの表示を更新
+        function updateLanguageLinks() {
+            document.querySelectorAll('[data-lang]').forEach(link => {
+                if (link.dataset.lang === currentLanguage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+        
+        // 言語を適用
+        function applyLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (i18n[currentLanguage] && i18n[currentLanguage][key]) {
+                    if (element.tagName === 'INPUT' && element.type === 'submit') {
+                        element.value = i18n[currentLanguage][key];
+                    } else {
+                        element.textContent = i18n[currentLanguage][key];
+                    }
+                }
+            });
+            
+            // 言語リンクのテキストを更新
+            const langLinks = document.querySelectorAll('[data-lang]');
+            langLinks.forEach(link => {
+                const lang = link.dataset.lang;
+                if (lang === 'ja') {
+                    link.textContent = '日本語';
+                } else if (lang === 'zh') {
+                    link.textContent = '中文';
+                } else if (lang === 'en') {
+                    link.textContent = 'English';
+                } else if (lang === 'ko') {
+                    link.textContent = '한국어';
+                }
+            });
+        }
+        
+        // ページ読み込み時に言語を適用
+        document.addEventListener('DOMContentLoaded', () => {
+            document.documentElement.lang = currentLanguage;
+            applyLanguage();
+            updateLanguageLinks();
+        });
+    </script>
+    <script src="waiting-dashboard.js"></script>
+</body>
+</html>
+

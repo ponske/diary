@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規登録 - 日記帳</title>
+    <link rel="stylesheet" href="diary.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1 class="login-title">日記帳 新規登録</h1>
+                <p class="login-subtitle">メールアドレスとながく使えるパスワードを決めてね。</p>
+            </div>
+            <div class="login-body-inner">
+                <div class="login-field">
+                    <label for="signup-email">メールアドレス</label>
+                    <input id="signup-email" class="login-input" type="email" autocomplete="email" placeholder="you@example.com">
+                </div>
+                <div class="login-field">
+                    <label for="signup-password">パスワード</label>
+                    <input id="signup-password" class="login-input" type="password" autocomplete="new-password" placeholder="8文字以上がおすすめ">
+                </div>
+                <div class="login-field">
+                    <label for="signup-password2">パスワード（確認）</label>
+                    <input id="signup-password2" class="login-input" type="password" autocomplete="new-password" placeholder="もう一度入力してください">
+                </div>
+                <div class="login-field login-field-helper">
+                    <p id="signup-error" style="color:#d26b8c;font-size:0.85em;"></p>
+                </div>
+                <div class="button-group login-button-group">
+                    <button id="signup-submit" class="btn btn-save login-submit-btn" type="button">登録する</button>
+                </div>
+                <div class="login-field login-field-helper" style="margin-top: 10px; text-align: center;">
+                    <a href="index.html" style="font-size: 0.85em; color: #c46d96; text-decoration: underline;">すでに登録済みの方はこちら</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="auth-signup.js"></script>
+</body>
+</html>
+
+
+
+
+

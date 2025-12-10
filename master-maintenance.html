@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アトラクション情報編集 - WonderPasNavi</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="diary.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FFB6C1 0%, #B0E0E6 50%, #DDA0DD 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #DDA0DD;
+        }
+
+        header h1 {
+            color: #5a5a5a;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #DDA0DD;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .master-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .master-item {
+            padding: 20px;
+            background: linear-gradient(135deg, #FFFACD 0%, #F0E68C 100%);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .master-item-header {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #5a5a5a;
+            font-size: 1.1rem;
+        }
+
+        .master-item-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .master-item-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .master-item-field label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .master-item-field input,
+        .master-item-field select {
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: white;
+        }
+
+        .master-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .master-save-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .master-save-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="route-optimizer.html" class="back-link">← ルート最適化ページに戻る</a>
+        <header>
+            <h1>📝 アトラクション情報編集</h1>
+            <p>各アトラクションの所要時間とジャンルを設定できます</p>
+        </header>
+        <div style="background: linear-gradient(135deg, #FFFACD 0%, #F0E68C 100%); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 2px solid rgba(255, 255, 255, 0.8);">
+            <h2 style="color: #5a5a5a; margin-bottom: 10px; font-size: 1.2rem;">💝 ご協力のお願い</h2>
+            <p style="color: #666; line-height: 1.8; margin: 0 0 15px 0;">
+                このアプリをより便利にするため、<strong>アトラクションの所要時間</strong>をご存知の方は、ぜひ情報を入力してください！<br>
+                ボランティアでご協力いただけると、他のユーザーもより正確なルート計画を立てられるようになります。<br>
+                ご協力いただいた皆様、ありがとうございます！🙏<br>
+                <strong style="color: #DDA0DD;">※ このページはログイン必須です。いたずら防止のため、ご協力をお願いします。</strong>
+            </p>
+            <div id="loginPrompt" style="text-align: center; padding: 15px; background: rgba(255, 255, 255, 0.8); border-radius: 8px; display: none;">
+                <p style="margin-bottom: 10px; color: #666;">ログインが必要です</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <a href="index.html" style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">🔐 ログイン</a>
+                    <a href="signup.html" style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">✨ 新規登録</a>
+                </div>
+            </div>
+        </div>
+        <div id="masterAttractionList" class="master-list">
+            <div class="loading">読み込み中...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        let attractionsMetadata = {};
+        let availableAttractions = [];
+
+        // Firestoreからアトラクションメタデータを読み込む
+        async function loadAttractionsMetadata() {
+            try {
+                const snapshot = await db.collection('attractions_metadata').get();
+                attractionsMetadata = {};
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    attractionsMetadata[data.official_id] = {
+                        duration_minutes: data.duration_minutes || null,
+                        genre: data.genre || ''
+                    };
+                });
+                console.log(`${Object.keys(attractionsMetadata).length}件のアトラクションメタデータを読み込みました`);
+            } catch (error) {
+                console.error('メタデータの読み込みエラー:', error);
+            }
+        }
+
+        // アトラクションデータを読み込む
+        async function loadAttractions() {
+            try {
+                const response = await fetch('attractions.json');
+                const data = await response.json();
+                
+                if (data && Array.isArray(data)) {
+                    availableAttractions = data
+                        .filter(attr => attr.is_active && !attr.is_invalid && attr.entrance_lat && attr.entrance_lng)
+                        .map(attr => {
+                            const officialId = parseInt(attr.official_id) || null;
+                            return {
+                                id: attr.id,
+                                name: attr.name.replace(/\s*\(ID:\s*\d+\)/g, '').trim(),
+                                official_id: attr.official_id || '',
+                                icon: getIcon(attr.name)
+                            };
+                        });
+                    console.log(`${availableAttractions.length}件のアトラクションを取得しました`);
+                }
+            } catch (error) {
+                console.error('アトラクション取得エラー:', error);
+            }
+        }
+
+        function getIcon(name) {
+            if (name.includes('シアター') || name.includes('ショー') || name.includes('フィルハーマジック') || name.includes('ホール') || name.includes('エンカウンター')) {
+                return '🎭';
+            } else if (name.includes('コースター') || name.includes('マウンテン')) {
+                return '🎢';
+            } else if (name.includes('スプラッシュ') || name.includes('急流')) {
+                return '💦';
+            } else if (name.includes('クルーズ') || name.includes('鉄道') || name.includes('いかだ') || name.includes('カヌー') || name.includes('ボート') || name.includes('オムニバス') || name.includes('蒸気船')) {
+                return '🚂';
+            } else {
+                return '🎡';
+            }
+        }
+
+        // Firestoreにアトラクションメタデータを保存
+        async function saveAttractionMetadata(officialId, durationMinutes, genre) {
+            // 認証状態を再確認
+            const user = auth.currentUser;
+            if (!user) {
+                throw new Error('ログインが必要です。再度ログインしてください。');
+            }
+
+            try {
+                await db.collection('attractions_metadata').doc(officialId).set({
+                    official_id: officialId,
+                    duration_minutes: durationMinutes ? parseInt(durationMinutes) : null,
+                    genre: genre || '',
+                    updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+                    updated_by: user.email || user.uid // 更新者の情報を記録（いたずら防止）
+                }, { merge: true });
+                
+                // ローカルのメタデータも更新
+                attractionsMetadata[officialId] = {
+                    duration_minutes: durationMinutes ? parseInt(durationMinutes) : null,
+                    genre: genre || ''
+                };
+                
+                return true;
+            } catch (error) {
+                console.error('メタデータの保存エラー:', error);
+                throw error;
+            }
+        }
+
+        // マスタメンテリストを描画
+        async function renderMasterMaintenanceList() {
+            const container = document.getElementById('masterAttractionList');
+            
+            if (availableAttractions.length === 0) {
+                container.innerHTML = '<div class="empty-state">アトラクションデータを読み込んでください</div>';
+                return;
+            }
+
+            // official_idでグループ化（重複を避ける）
+            const uniqueAttractions = {};
+            availableAttractions.forEach(attr => {
+                if (attr.official_id && !uniqueAttractions[attr.official_id]) {
+                    uniqueAttractions[attr.official_id] = attr;
+                }
+            });
+
+            if (Object.keys(uniqueAttractions).length === 0) {
+                container.innerHTML = '<div class="empty-state">編集可能なアトラクションがありません</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            Object.values(uniqueAttractions).forEach(attr => {
+                const item = document.createElement('div');
+                item.className = 'master-item';
+                
+                const metadata = attractionsMetadata[attr.official_id] || {};
+                const durationValue = metadata.duration_minutes || '';
+                const genreValue = metadata.genre || '';
+                
+                item.innerHTML = `
+                    <div class="master-item-header">${attr.icon || '🎡'} ${attr.name}</div>
+                    <div class="master-item-fields">
+                        <div class="master-item-field">
+                            <label>所要時間（分）</label>
+                            <input type="number" id="duration_${attr.official_id}" value="${durationValue}" min="0" placeholder="例: 5">
+                        </div>
+                        <div class="master-item-field">
+                            <label>ジャンル</label>
+                            <select id="genre_${attr.official_id}">
+                                <option value="">選択してください...</option>
+                                <option value="theater" ${genreValue === 'theater' ? 'selected' : ''}>座れるアトラクション（屋内シアター型）</option>
+                                <option value="indoor_ride" ${genreValue === 'indoor_ride' ? 'selected' : ''}>室内ライド</option>
+                                <option value="outdoor_ride" ${genreValue === 'outdoor_ride' ? 'selected' : ''}>船・電車など屋外ライド</option>
+                                <option value="coaster" ${genreValue === 'coaster' ? 'selected' : ''}>ジェットコースター</option>
+                                <option value="water_ride" ${genreValue === 'water_ride' ? 'selected' : ''}>急流すべり</option>
+                                <option value="other" ${genreValue === 'other' ? 'selected' : ''}>その他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="master-item-actions">
+                        <button class="master-save-btn" onclick="saveAttractionMetadataItem('${attr.official_id}')">💾 保存</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // 個別のアトラクションメタデータを保存
+        async function saveAttractionMetadataItem(officialId) {
+            const durationInput = document.getElementById(`duration_${officialId}`);
+            const genreSelect = document.getElementById(`genre_${officialId}`);
+            
+            const durationMinutes = durationInput.value.trim();
+            const genre = genreSelect.value;
+            
+            try {
+                await saveAttractionMetadata(officialId, durationMinutes, genre);
+                // 保存成功時の感謝メッセージ
+                const attrName = availableAttractions.find(a => a.official_id === officialId)?.name || 'アトラクション';
+                alert(`💝 ありがとうございます！\n「${attrName}」の情報を保存しました。\n他のユーザーのルート計画に役立ちます！`);
+            } catch (error) {
+                alert('保存に失敗しました: ' + error.message);
+            }
+        }
+
+        // 認証チェックと初期化
+        async function initializePage() {
+            // 認証状態の変更を監視（一度だけ実行されるようにする）
+            let initialized = false;
+            auth.onAuthStateChanged(async (user) => {
+                if (initialized) return; // 既に初期化済みの場合はスキップ
+                
+                if (!user) {
+                    // ログインしていない場合はログインボタンを表示
+                    const loginPrompt = document.getElementById('loginPrompt');
+                    if (loginPrompt) {
+                        loginPrompt.style.display = 'block';
+                    }
+                    // 戻り先を記録
+                    sessionStorage.setItem('redirectAfterLogin', 'master-maintenance.html');
+                    return;
+                }
+
+                // ログイン済みの場合は初期化
+                initialized = true;
+                console.log('認証済みユーザー:', user.email);
+                const loginPrompt = document.getElementById('loginPrompt');
+                if (loginPrompt) {
+                    loginPrompt.style.display = 'none';
+                }
+                await loadData();
+            });
+        }
+
+        async function loadData() {
+            try {
+                await loadAttractionsMetadata();
+                await loadAttractions();
+                await renderMasterMaintenanceList();
+            } catch (error) {
+                console.error('データの読み込みエラー:', error);
+                document.getElementById('masterAttractionList').innerHTML = 
+                    '<div class="empty-state">データの読み込みに失敗しました。ページを再読み込みしてください。</div>';
+            }
+        }
+
+        // ページ読み込み時に初期化
+        initializePage();
+    </script>
+</body>
+</html>
+

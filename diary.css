@@ -1,0 +1,2086 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --font-display: 'Zen Maru Gothic', 'M PLUS Rounded 1c', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-body: 'M PLUS Rounded 1c', 'Zen Maru Gothic', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+body {
+    font-family: var(--font-body);
+    background: 
+        radial-gradient(ellipse 1200px 800px at 12% 22%, rgba(255, 182, 193, 0.35) 0%, transparent 45%),
+        radial-gradient(ellipse 1000px 900px at 88% 78%, rgba(255, 192, 203, 0.3) 0%, transparent 48%),
+        radial-gradient(ellipse 1100px 700px at 48% 8%, rgba(255, 182, 193, 0.22) 0%, transparent 52%),
+        radial-gradient(ellipse 900px 1000px at 18% 82%, rgba(255, 218, 225, 0.28) 0%, transparent 42%),
+        radial-gradient(ellipse 1050px 750px at 78% 28%, rgba(255, 182, 193, 0.18) 0%, transparent 48%),
+        radial-gradient(ellipse 950px 850px at 35% 65%, rgba(255, 228, 225, 0.25) 0%, transparent 46%),
+        linear-gradient(135deg, #ffeef8 0%, #fff0f5 12%, #ffe4e6 25%, #ffeef8 38%, #fff0f5 52%, #ffe4e6 65%, #ffeef8 78%, #fff0f5 92%, #ffeef8 100%);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%, 400% 400%;
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 50%;
+    animation: gradientShift 22s ease infinite, randomGradient 28s ease infinite;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* 細かいドットのパターンで柔らかい紙の質感を追加 */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.75) 1px, transparent 1px);
+    background-size: 18px 18px;
+    mix-blend-mode: soft-light;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 50%; }
+    50% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 100% 50%; }
+    100% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 50%; }
+}
+
+@keyframes randomGradient {
+    0% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 50%; }
+    20% { background-position: 8% 4%, -4% 9%, 4% -4%, -9% 7%, 7% -7%, 3% 5%, 0% 50%; }
+    40% { background-position: -4% 9%, 7% -4%, -7% 7%, 4% -9%, -9% 4%, -3% 8%, 0% 50%; }
+    60% { background-position: 7% -7%, -9% 7%, 9% 4%, -4% -4%, 4% 9%, 6% -5%, 0% 50%; }
+    80% { background-position: -6% 6%, 5% -6%, -5% 5%, 6% -7%, -7% 6%, -4% 4%, 0% 50%; }
+    100% { background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 50%; }
+}
+
+/* 装飾要素 */
+body::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(ellipse 1000px 750px at 18% 28%, rgba(255, 182, 193, 0.22) 0%, transparent 62%),
+        radial-gradient(ellipse 850px 950px at 82% 72%, rgba(255, 192, 203, 0.18) 0%, transparent 68%),
+        radial-gradient(ellipse 900px 650px at 48% 48%, rgba(255, 182, 193, 0.14) 0%, transparent 58%),
+        radial-gradient(ellipse 700px 900px at 12% 82%, rgba(255, 218, 225, 0.19) 0%, transparent 63%),
+        radial-gradient(ellipse 880px 700px at 88% 18%, rgba(255, 182, 193, 0.16) 0%, transparent 61%),
+        radial-gradient(ellipse 750px 800px at 32% 68%, rgba(255, 228, 225, 0.17) 0%, transparent 59%);
+    animation: float 28s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(50px);
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(30px, -30px) rotate(120deg); }
+    66% { transform: translate(-20px, 20px) rotate(240deg); }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.header {
+    margin-bottom: 40px;
+    padding: 26px 26px 35px;
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.88) 45%, rgba(255, 255, 255, 0.75) 100%),
+        radial-gradient(ellipse at bottom right, rgba(255, 248, 250, 0.6) 0%, transparent 70%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.08) 0%, rgba(255, 192, 203, 0.04) 35%, rgba(255, 218, 225, 0.06) 65%, rgba(255, 182, 193, 0.05) 100%);
+    backdrop-filter: blur(18px);
+    border-radius: 35px;
+    box-shadow: 
+        0 0 0 1px rgba(255, 192, 203, 0.28),
+        0 10px 40px rgba(255, 182, 193, 0.22),
+        0 0 80px rgba(255, 182, 193, 0.12),
+        inset 0 2px 4px rgba(255, 255, 255, 0.95),
+        inset 0 -1px 2px rgba(255, 182, 193, 0.1);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.1) 0%, transparent 70%);
+    animation: headerGlow 15s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* レース風のスカラップ下飾り */
+.header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -18px;
+    width: 100%;
+    height: 18px;
+    background-image: radial-gradient(circle at 10px -8px, #ffeaf2 10px, transparent 11px);
+    background-size: 20px 18px;
+}
+
+@keyframes headerGlow {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+    50% { transform: translate(20px, -20px) scale(1.1); opacity: 0.5; }
+}
+
+.header-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 20px;
+}
+
+.header-title-block {
+    text-align: center;
+}
+
+.title {
+    display: inline-block;
+    padding: 0.3em 1.8em;
+    font-size: 3.2em;
+    font-weight: 700;
+    color: #ff69b4;
+    background: linear-gradient(90deg, #ffe4f2 0%, #ffeef8 35%, #e8f9ff 65%, #ffe4f2 100%);
+    border-radius: 999px;
+    box-shadow:
+        0 4px 10px rgba(255, 182, 193, 0.35),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    text-shadow:
+        0 1px 2px rgba(255, 255, 255, 0.8),
+        0 0 8px rgba(255, 182, 193, 0.4);
+    margin-bottom: 14px;
+    font-family: var(--font-display);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+}
+
+.title::before,
+.title::after {
+    content: '';
+    position: absolute;
+    top: 55%;
+    width: 26px;
+    height: 14px;
+    background: linear-gradient(135deg, #ffe4f2 0%, #ffd6e8 100%);
+    transform: translateY(-50%);
+}
+
+.title::before {
+    right: 100%;
+    border-radius: 8px 0 0 8px;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.title::after {
+    left: 100%;
+    border-radius: 0 8px 8px 0;
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    color: #d87093;
+    font-weight: 300;
+    font-style: italic;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.user-name-display {
+    margin-top: 6px;
+    font-size: 0.95em;
+    color: #c46d96;
+    font-family: var(--font-body);
+    opacity: 0.9;
+}
+
+.diary-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+/* ==== ログイン画面 ==== */
+
+.login-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 520px;
+}
+
+.login-card {
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.9) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.1) 0%, rgba(255, 192, 203, 0.06) 40%, rgba(255, 218, 225, 0.08) 100%);
+    border-radius: 28px;
+    padding: 28px 26px 26px;
+    box-shadow:
+        0 0 0 1px rgba(255, 192, 203, 0.3),
+        0 15px 45px rgba(255, 182, 193, 0.3),
+        0 0 80px rgba(255, 182, 193, 0.25);
+    backdrop-filter: blur(16px);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.login-title {
+    font-family: var(--font-display);
+    font-size: 1.9em;
+    color: #ff69b4;
+    margin-bottom: 6px;
+}
+
+.login-subtitle {
+    font-size: 0.95em;
+    color: #c46d96;
+}
+
+.login-body-inner {
+    margin-top: 6px;
+}
+
+.login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.login-field label {
+    font-size: 0.9em;
+    color: #c46d96;
+}
+
+.login-input {
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 0.95em;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(255, 192, 203, 0.03) 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.3),
+        0 4px 12px rgba(255, 182, 193, 0.2);
+    outline: none;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.login-input:focus {
+    box-shadow:
+        0 0 0 2px rgba(255, 105, 180, 0.45),
+        0 6px 18px rgba(255, 105, 180, 0.3);
+    transform: translateY(-1px);
+}
+
+.login-field-helper p {
+    font-size: 0.8em;
+    color: #c4a1b5;
+}
+
+.login-button-group {
+    margin-top: 10px;
+}
+
+.login-submit-btn {
+    width: 100%;
+}
+
+@media (max-width: 968px) {
+    .diary-wrapper {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* PCブラウザ用: remindodo では横幅を広く使い、リスト側を少し広めにする */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1400px;
+    }
+
+    #todo-wrapper.diary-wrapper {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.4fr);
+        gap: 40px;
+    }
+}
+
+.diary-editor,
+.diary-list {
+    background:
+        /* スカートのようなパステルストライプ */
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 244, 248, 0.9) 0px,
+            rgba(255, 244, 248, 0.9) 18px,
+            rgba(255, 234, 246, 0.9) 18px,
+            rgba(255, 234, 246, 0.9) 36px,
+            rgba(232, 249, 255, 0.9) 36px,
+            rgba(232, 249, 255, 0.9) 54px,
+            rgba(255, 251, 232, 0.9) 54px,
+            rgba(255, 251, 232, 0.9) 72px
+        ),
+        radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 38%, rgba(255, 255, 255, 0.82) 100%),
+        radial-gradient(ellipse at bottom left, rgba(255, 248, 250, 0.5) 0%, transparent 65%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.07) 0%, rgba(255, 192, 203, 0.035) 28%, rgba(255, 218, 225, 0.055) 58%, rgba(255, 182, 193, 0.045) 100%);
+    backdrop-filter: blur(14px);
+    border-radius: 28px;
+    padding: 32px;
+    box-shadow: 
+        0 0 0 1px rgba(255, 192, 203, 0.22),
+        0 12px 45px rgba(255, 182, 193, 0.18),
+        0 0 90px rgba(255, 182, 193, 0.1),
+        inset 0 2px 3px rgba(255, 255, 255, 0.92),
+        inset 0 -1px 2px rgba(255, 182, 193, 0.08);
+    border: none;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.diary-editor::before,
+.diary-list::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -30%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: cardGlow 12s ease-in-out infinite;
+}
+
+@keyframes cardGlow {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+    50% { transform: translate(-10px, 10px) scale(1.2); opacity: 0.6; }
+}
+
+.diary-editor:hover,
+.diary-list:hover {
+    transform: translateY(-6px) scale(1.005);
+    box-shadow: 
+        0 0 0 2px rgba(255, 192, 203, 0.32),
+        0 18px 55px rgba(255, 182, 193, 0.28),
+        0 0 110px rgba(255, 182, 193, 0.16),
+        inset 0 2px 3px rgba(255, 255, 255, 0.92),
+        inset 0 -1px 2px rgba(255, 182, 193, 0.1);
+}
+
+.editor-header,
+.list-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px dashed rgba(255, 182, 193, 0.5);
+}
+
+.editor-header h2,
+.list-header h2 {
+    font-size: 1.8em;
+    color: #ff69b4;
+    font-weight: 600;
+    font-family: var(--font-display);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding-left: 2.4em;
+}
+
+/* 見出し横のリボンスタンプ */
+.editor-header h2::before,
+.list-header h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 16px;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 55%),
+        linear-gradient(135deg, #ffb7d5 0%, #ffcde5 50%, #ffe6f2 100%);
+    border-radius: 999px;
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.5),
+        0 3px 6px rgba(255, 182, 193, 0.4);
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.list-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.list-footer-actions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.date-input {
+    width: 100%;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 20px;
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(255, 192, 203, 0.03) 100%);
+    font-family: var(--font-body);
+    font-size: 1em;
+    color: #d87093;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 0 1px rgba(255, 182, 193, 0.3),
+        0 4px 15px rgba(255, 182, 193, 0.15),
+        0 0 30px rgba(255, 182, 193, 0.1);
+}
+
+.date-input:focus {
+    box-shadow: 
+        0 0 0 2px rgba(255, 105, 180, 0.4),
+        0 6px 20px rgba(255, 105, 180, 0.25),
+        0 0 50px rgba(255, 105, 180, 0.15);
+    transform: scale(1.02);
+}
+
+.content-input {
+    width: 100%;
+    min-height: 300px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: none;
+    border-radius: 20px;
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(255, 192, 203, 0.03) 100%);
+    font-family: var(--font-body);
+    font-size: 1em;
+    color: #333;
+    line-height: 1.8;
+    resize: vertical;
+    outline: none;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 0 1px rgba(255, 182, 193, 0.3),
+        0 4px 15px rgba(255, 182, 193, 0.15),
+        0 0 30px rgba(255, 182, 193, 0.1);
+}
+
+.content-input:focus {
+    box-shadow: 
+        0 0 0 2px rgba(255, 105, 180, 0.4),
+        0 6px 20px rgba(255, 105, 180, 0.25),
+        0 0 50px rgba(255, 105, 180, 0.15);
+    transform: scale(1.01);
+}
+
+.content-input::placeholder {
+    color: #d4a5b8;
+    font-style: italic;
+}
+
+/* remindodo 用のシンプルなタスク入力欄 */
+.todo-text-input {
+    width: 100%;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    border-radius: 20px;
+    font-size: 1em;
+}
+
+/* remindodo のリマインド時間入力を少しコンパクトに */
+#todo-remind-at.master-input {
+    padding: 8px 12px;
+    font-size: 0.9em;
+}
+
+/* remindodo: リマインド時間 + タイマーチェックを横並びに */
+.todo-options-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.todo-remind-field {
+    flex: 2 1 220px;
+}
+
+.todo-track-field {
+    flex: 1 1 160px;
+}
+
+.todo-track-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9em;
+}
+
+/* ==== kakeevo（家計簿）用スタイル ==== */
+
+.kakeevo-input-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.kakeevo-input-row .master-field {
+    flex: 1 1 160px;
+}
+
+.kakeevo-amount-input {
+    text-align: right;
+}
+
+.kakeevo-category-select {
+    cursor: pointer;
+}
+
+.kakeevo-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.kakeevo-charts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.kakeevo-chart-card {
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.kakeevo-chart-wrapper {
+    width: 280px;
+    height: 280px;
+    position: relative;
+    margin: 8px auto 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kakeevo-chart-card canvas {
+    width: 280px !important;
+    height: 280px !important;
+    max-width: 280px !important;
+    max-height: 280px !important;
+    display: block;
+    flex-shrink: 0;
+}
+
+/* Chart.jsの凡例スタイル */
+.kakeevo-chart-card .chartjs-legend {
+    margin-top: 10px;
+    font-size: 0.85em;
+}
+
+.kakeevo-chart-card .chartjs-legend ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 12px;
+}
+
+.kakeevo-chart-card .chartjs-legend li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: #333;
+}
+
+/* 統計情報のスタイル */
+.kakeevo-chart-stats {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 182, 193, 0.3);
+    width: 100%;
+}
+
+/* 統計情報のスタイル（棒グラフ） */
+.kakeevo-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.kakeevo-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.kakeevo-bar-label {
+    font-size: 0.85em;
+    color: #c46d96;
+    font-weight: 500;
+}
+
+.kakeevo-bar-container {
+    position: relative;
+    width: 100%;
+    height: 24px;
+    background-color: rgba(255, 182, 193, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.kakeevo-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.3s ease;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.kakeevo-bar-utility {
+    background: linear-gradient(90deg, #FFA07A 0%, #FF8C69 100%);
+}
+
+.kakeevo-bar-food {
+    background: linear-gradient(90deg, #FF69B4 0%, #FF1493 100%);
+}
+
+.kakeevo-bar-value {
+    position: absolute;
+    right: 8px;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: #333;
+    z-index: 1;
+}
+
+/* 共通凡例のスタイル */
+.kakeevo-legend-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.kakeevo-legend {
+    margin-top: 8px;
+}
+
+.kakeevo-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px 12px;
+}
+
+.kakeevo-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: #333;
+}
+
+.kakeevo-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.kakeevo-legend-text {
+    white-space: nowrap;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .kakeevo-charts-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .kakeevo-chart-card {
+        min-height: 380px;
+    }
+    
+    .kakeevo-chart-wrapper {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .kakeevo-chart-card canvas {
+        max-width: 240px;
+        max-height: 240px;
+        width: 240px !important;
+        height: 240px !important;
+    }
+}
+
+.kakeevo-summary-card {
+    padding: 12px 14px;
+    border-radius: 18px;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.06) 0%, rgba(255, 192, 203, 0.04) 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 192, 203, 0.22),
+        0 6px 20px rgba(255, 182, 193, 0.18),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.kakeevo-summary-label {
+    font-size: 0.85em;
+    color: #c46d96;
+    margin-bottom: 4px;
+}
+
+.kakeevo-summary-value {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #ff69b4;
+}
+
+.kakeevo-month-label {
+    font-size: 0.85em;
+    color: #c46d96;
+}
+
+.kakeevo-expense-date {
+    font-size: 0.9em;
+    color: #c46d96;
+}
+
+.kakeevo-expense-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.kakeevo-expense-category {
+    font-weight: 600;
+    color: #ff69b4;
+}
+
+.kakeevo-expense-amount {
+    font-weight: 700;
+    color: #ff1493;
+}
+
+.kakeevo-expense-memo {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.kakeevo-expense-shop {
+    font-size: 0.9em;
+    color: #c46d96;
+    margin-bottom: 2px;
+}
+
+.kakeevo-helper-text {
+    margin-top: 8px;
+    font-size: 0.8em;
+    color: #c4a1b5;
+}
+
+/* kakeevo用の小さなカードスタイル */
+#kakeevo-expenses.entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
+}
+
+.kakeevo-expense-card {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%),
+        radial-gradient(ellipse at bottom right, rgba(255, 248, 250, 0.4) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.055) 0%, rgba(255, 192, 203, 0.028) 48%, rgba(255, 218, 225, 0.048) 100%);
+    border-radius: 16px;
+    padding: 12px;
+    border: none;
+    box-shadow: 
+        0 0 0 1px rgba(255, 182, 193, 0.22),
+        0 4px 12px rgba(255, 182, 193, 0.12),
+        0 0 30px rgba(255, 182, 193, 0.06),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.kakeevo-expense-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #ff69b4 0%, #ff1493 100%);
+    border-radius: 16px 0 0 16px;
+}
+
+.kakeevo-expense-card:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 
+        0 0 0 2px rgba(255, 105, 180, 0.28),
+        0 6px 20px rgba(255, 182, 193, 0.18),
+        0 0 50px rgba(255, 182, 193, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.kakeevo-expense-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.kakeevo-expense-date-small {
+    font-size: 0.75em;
+    color: #c46d96;
+    font-weight: 500;
+}
+
+.btn-delete-small {
+    background: transparent;
+    border: none;
+    font-size: 0.9em;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+}
+
+.btn-delete-small:hover {
+    opacity: 1;
+    background: rgba(255, 105, 180, 0.1);
+    transform: scale(1.1);
+}
+
+.kakeevo-expense-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.kakeevo-expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
+}
+
+.kakeevo-expense-table tr {
+    border-bottom: 1px solid rgba(255, 182, 193, 0.2);
+}
+
+.kakeevo-expense-table tr:last-child {
+    border-bottom: none;
+}
+
+.kakeevo-table-label {
+    padding: 6px 8px 6px 0;
+    color: #c46d96;
+    font-weight: 500;
+    font-size: 0.85em;
+    vertical-align: top;
+    white-space: nowrap;
+    width: 60px;
+}
+
+.kakeevo-table-value {
+    padding: 6px 0;
+    color: #333;
+    word-break: break-word;
+}
+
+.kakeevo-expense-category-small {
+    font-weight: 600;
+    color: #ff69b4;
+    font-size: 0.95em;
+}
+
+.kakeevo-expense-amount-small {
+    font-weight: 700;
+    color: #ff1493;
+    font-size: 1.1em;
+}
+
+.kakeevo-expense-shop-small {
+    font-size: 0.85em;
+    color: #c46d96;
+}
+
+.kakeevo-expense-memo-small {
+    font-size: 0.85em;
+    color: #666;
+    line-height: 1.4;
+}
+
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    #kakeevo-expenses.entries {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+    }
+    
+    .kakeevo-expense-card {
+        padding: 10px;
+    }
+}
+
+/* ==== アプリ紹介ページ apps.html 用 ==== */
+
+.apps-main {
+    margin-top: 10px;
+}
+
+.apps-hero {
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.9) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.08) 0%, rgba(255, 192, 203, 0.05) 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 192, 203, 0.25),
+        0 10px 30px rgba(255, 182, 193, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
+    font-size: 0.95em;
+    color: #c46d96;
+}
+
+.apps-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.app-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.1fr);
+    gap: 20px;
+    padding: 22px 22px 20px;
+    border-radius: 26px;
+    background:
+        radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 100%),
+        radial-gradient(ellipse at bottom left, rgba(255, 248, 250, 0.5) 0%, transparent 65%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.06) 0%, rgba(255, 192, 203, 0.03) 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 192, 203, 0.25),
+        0 12px 35px rgba(255, 182, 193, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
+}
+
+.app-card-title {
+    font-size: 1.6em;
+    color: #ff69b4;
+    font-family: var(--font-display);
+    margin-bottom: 6px;
+}
+
+.app-card-lead {
+    font-size: 0.95em;
+    color: #c46d96;
+    margin-bottom: 10px;
+}
+
+.app-card-points {
+    list-style: disc;
+    padding-left: 1.4em;
+    font-size: 0.9em;
+    color: #7b5873;
+}
+
+.app-card-points li + li {
+    margin-top: 4px;
+}
+
+.app-card-screens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.app-screenshot-frame {
+    width: 100%;
+    border-radius: 18px;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.9) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.08) 0%, rgba(255, 192, 203, 0.04) 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 192, 203, 0.35),
+        0 10px 25px rgba(255, 182, 193, 0.25),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
+    padding: 8px;
+    overflow: hidden;
+}
+
+.app-screenshot-sub {
+    max-width: 70%;
+}
+
+.app-screenshot-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+.apps-footer-note {
+    font-size: 0.8em;
+    color: #c4a1b5;
+}
+
+@media (max-width: 900px) {
+    .app-card {
+        grid-template-columns: 1fr;
+    }
+
+    .app-card-screens {
+        align-items: stretch;
+    }
+
+    .app-screenshot-sub {
+        max-width: 100%;
+    }
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    font-family: var(--font-body);
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* クリック時のきらめきエフェクト */
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* ボタン左のリボンスタンプ */
+.btn-save,
+.btn-clear,
+.btn-delete-all {
+    padding-left: 3em;
+}
+
+.btn-save::before,
+.btn-clear::before,
+.btn-delete-all::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 14px;
+    border-radius: 999px;
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.5),
+        0 3px 6px rgba(255, 182, 193, 0.35);
+}
+
+/* マスタメンテボタン */
+.btn-master {
+    padding: 8px 18px;
+    font-size: 0.85em;
+    min-width: auto;
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.9) 0%, transparent 55%),
+        radial-gradient(circle at 0% 100%, rgba(255, 192, 203, 0.4) 0%, transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(232, 249, 255, 0.45) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(255, 192, 203, 0.55) 0%, rgba(255, 182, 193, 0.4) 40%, rgba(232, 249, 255, 0.4) 100%);
+    background-size: 140% 140%, 120% 120%, 120% 120%, 100% 100%;
+    background-position: 0% 0%, 0% 100%, 100% 0%, 0% 0%;
+    color: #ffffff;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.7),
+        0 6px 18px rgba(255, 182, 193, 0.55);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.btn-master::before {
+    display: none;
+}
+
+.btn-master:hover {
+    transform: translateY(-2px) scale(1.03);
+    background-position: 40% 0%, 10% 90%, 90% 10%, 0% 0%;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.9),
+        0 10px 28px rgba(255, 182, 193, 0.7);
+}
+
+.btn-save::before {
+    background:
+        radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+        linear-gradient(135deg, #ff8abf 0%, #ff6fb0 50%, #ff92c7 100%);
+}
+
+.btn-clear::before {
+    background:
+        radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+        linear-gradient(135deg, #ffbfd4 0%, #ffcfe0 50%, #ffe2ec 100%);
+}
+
+.btn-delete-all::before {
+    background:
+        radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.9) 0%, transparent 50%),
+        linear-gradient(135deg, #ff89ae 0%, #ff6b9d 50%, #ff96bb 100%);
+}
+
+.btn-save {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 105, 180, 1) 0%, rgba(255, 20, 147, 0.96) 45%, rgba(255, 105, 180, 0.92) 100%),
+        radial-gradient(ellipse at bottom right, rgba(255, 20, 147, 0.3) 0%, transparent 60%),
+        linear-gradient(135deg, #ff69b4 0%, #ff1493 48%, #ff69b4 100%);
+    background-size: 160% 160%, 120% 120%, 100% 100%;
+    background-position: 0% 0%, 0% 0%, 0% 0%;
+    color: white;
+    flex: 1;
+    min-width: 150px;
+    box-shadow: 
+        0 0 0 1px rgba(255, 105, 180, 0.28),
+        0 6px 18px rgba(255, 105, 180, 0.28),
+        0 0 35px rgba(255, 105, 180, 0.18),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-save:hover {
+    transform: translateY(-4px) scale(1.06);
+    background-position: 55% 55%, 10% 10%, 0% 0%;
+    box-shadow: 
+        0 0 0 2px rgba(255, 105, 180, 0.38),
+        0 10px 28px rgba(255, 105, 180, 0.32),
+        0 0 55px rgba(255, 105, 180, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.btn-clear {
+    background: 
+        radial-gradient(ellipse at top right, rgba(255, 182, 193, 1) 0%, rgba(255, 192, 203, 0.96) 45%, rgba(255, 182, 193, 0.92) 100%),
+        radial-gradient(ellipse at bottom left, rgba(255, 192, 203, 0.3) 0%, transparent 60%),
+        linear-gradient(135deg, #ffb6c1 0%, #ffc0cb 48%, #ffb6c1 100%);
+    background-size: 160% 160%, 120% 120%, 100% 100%;
+    background-position: 0% 0%, 0% 0%, 0% 0%;
+    color: #fff;
+    flex: 1;
+    min-width: 150px;
+    box-shadow: 
+        0 0 0 1px rgba(255, 182, 193, 0.28),
+        0 6px 18px rgba(255, 182, 193, 0.28),
+        0 0 35px rgba(255, 182, 193, 0.18),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-clear:hover {
+    transform: translateY(-4px) scale(1.06);
+    background-position: 55% 55%, 10% 10%, 0% 0%;
+    box-shadow: 
+        0 0 0 2px rgba(255, 182, 193, 0.38),
+        0 10px 28px rgba(255, 182, 193, 0.32),
+        0 0 55px rgba(255, 182, 193, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.btn-delete-all {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 107, 157, 1) 0%, rgba(255, 143, 171, 0.96) 100%),
+        linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+    background-size: 140% 140%, 100% 100%;
+    background-position: 0% 0%, 0% 0%;
+    color: white;
+    padding: 10px 20px;
+    font-size: 0.9em;
+    box-shadow: 
+        0 0 0 1px rgba(255, 107, 157, 0.3),
+        0 4px 12px rgba(255, 107, 157, 0.25),
+        0 0 25px rgba(255, 107, 157, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-delete-all:hover {
+    transform: translateY(-3px) scale(1.06);
+    background-position: 50% 50%, 0% 0%;
+    box-shadow: 
+        0 0 0 2px rgba(255, 107, 157, 0.4),
+        0 8px 22px rgba(255, 107, 157, 0.3),
+        0 0 40px rgba(255, 107, 157, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.entries {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* remindodo: タスク名テキストが右端で切れないようにする */
+.todo-entry .entry-header {
+    align-items: flex-start;
+}
+
+.todo-entry .entry-date {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.todo-entry .entry-actions {
+    flex-shrink: 0;
+}
+
+.todo-entry {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    min-height: 90px;
+}
+
+.todo-priority-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin-right: 10px;
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95) 0%, transparent 55%),
+        linear-gradient(135deg, #ffb7d5 0%, #ffcfe0 50%, #ffe6f2 100%);
+    color: #ff1493;
+    font-size: 0.95em;
+    font-weight: 700;
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.6),
+        0 4px 10px rgba(255, 182, 193, 0.4);
+}
+
+.todo-toggle-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 0;
+    margin: 0;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+}
+
+.todo-text {
+    display: inline-block;
+    line-height: 1.6;
+    white-space: normal;
+    word-break: break-all;
+    color: #d87093;
+    font-weight: 500;
+}
+
+.todo-entry-done {
+    opacity: 0.7;
+    box-shadow:
+        0 0 0 1px rgba(200, 200, 200, 0.3),
+        0 4px 16px rgba(200, 200, 200, 0.25),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.todo-entry-done .todo-text {
+    color: #c4a1b5;
+    text-decoration: line-through;
+}
+
+/* remindodo: 優先度リスト表示エリア */
+.priority-wrapper {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 2px dashed rgba(255, 182, 193, 0.5);
+}
+
+.priority-header h3 {
+    font-size: 1.1em;
+    color: #ff69b4;
+    margin-bottom: 4px;
+}
+
+.priority-helper-text {
+    font-size: 0.85em;
+    color: #c4a1b5;
+}
+
+.priority-entries {
+    margin-top: 10px;
+    padding-left: 1.2em;
+    list-style: none;
+}
+
+.priority-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+}
+
+.priority-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background:
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95) 0%, transparent 55%),
+        linear-gradient(135deg, #ffb7d5 0%, #ffcfe0 50%, #ffe6f2 100%);
+    color: #ff1493;
+    font-size: 0.9em;
+    font-weight: 700;
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.6),
+        0 3px 8px rgba(255, 182, 193, 0.4);
+}
+
+.priority-text {
+    font-size: 0.95em;
+    color: #d87093;
+}
+
+.priority-empty {
+    font-size: 0.9em;
+    color: #c4a1b5;
+    margin-top: 8px;
+}
+
+/* マスタメンテナンスパネル */
+.master-panel {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 10% 0%, rgba(255, 192, 203, 0.25) 0%, transparent 55%),
+                radial-gradient(circle at 90% 100%, rgba(232, 249, 255, 0.25) 0%, transparent 55%),
+                rgba(255, 240, 245, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+}
+
+.master-panel.is-open {
+    display: flex;
+}
+
+.master-card {
+    width: min(480px, 100% - 40px);
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.9) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.12) 0%, rgba(255, 192, 203, 0.06) 50%, rgba(255, 218, 225, 0.08) 100%);
+    border-radius: 26px;
+    box-shadow:
+        0 0 0 1px rgba(255, 192, 203, 0.35),
+        0 14px 40px rgba(255, 182, 193, 0.3),
+        0 0 80px rgba(255, 182, 193, 0.2);
+    padding: 24px 26px 26px;
+    position: relative;
+}
+
+.master-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 2px dashed rgba(255, 182, 193, 0.6);
+}
+
+.master-header h2 {
+    font-size: 1.6em;
+    color: #ff69b4;
+    font-family: var(--font-display);
+}
+
+.master-close-btn {
+    border: none;
+    background: transparent;
+    font-size: 0.9em;
+    color: #c46d96;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 999px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.master-close-btn:hover {
+    background: rgba(255, 218, 225, 0.7);
+    transform: translateY(-1px);
+}
+
+.master-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.master-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.master-field label {
+    font-size: 0.9em;
+    color: #c46d96;
+}
+
+.master-input {
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: none;
+    font-family: var(--font-body);
+    font-size: 0.95em;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.05) 0%, rgba(255, 192, 203, 0.03) 100%);
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.3),
+        0 4px 12px rgba(255, 182, 193, 0.2);
+    outline: none;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.master-input:focus {
+    box-shadow:
+        0 0 0 2px rgba(255, 105, 180, 0.45),
+        0 6px 18px rgba(255, 105, 180, 0.3);
+    transform: translateY(-1px);
+}
+
+.master-button-group {
+    margin-top: 10px;
+}
+
+.master-save-btn,
+.master-cancel-btn {
+    flex: 1;
+}
+
+.master-cancel-btn {
+    background:
+        radial-gradient(ellipse at top right, rgba(255, 255, 255, 1) 0%, rgba(255, 248, 250, 0.96) 45%, rgba(255, 255, 255, 0.92) 100%),
+        linear-gradient(135deg, #ffe4f2 0%, #ffeef8 48%, #ffe4f2 100%);
+    color: #c46d96;
+    box-shadow:
+        0 0 0 1px rgba(255, 182, 193, 0.4),
+        0 6px 18px rgba(255, 182, 193, 0.28);
+}
+
+.entries::-webkit-scrollbar {
+    width: 10px;
+}
+
+.entries::-webkit-scrollbar-track {
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 10px;
+}
+
+.entries::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+    border-radius: 10px;
+}
+
+.entries::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+}
+
+.diary-entry {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%),
+        radial-gradient(ellipse at bottom right, rgba(255, 248, 250, 0.4) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.055) 0%, rgba(255, 192, 203, 0.028) 48%, rgba(255, 218, 225, 0.048) 100%);
+    border-radius: 22px;
+    padding: 22px;
+    border: none;
+    box-shadow: 
+        0 0 0 1px rgba(255, 182, 193, 0.22),
+        0 6px 22px rgba(255, 182, 193, 0.14),
+        0 0 55px rgba(255, 182, 193, 0.09),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -1px 1px rgba(255, 182, 193, 0.06);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.diary-entry::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 30%, rgba(255, 182, 193, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.diary-entry:hover::after {
+    opacity: 1;
+}
+
+.diary-entry::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, #ff69b4 0%, #ff1493 100%);
+    border-radius: 20px 0 0 20px;
+}
+
+.diary-entry:hover {
+    transform: translateX(6px) translateY(-4px) scale(1.01);
+    box-shadow: 
+        0 0 0 2px rgba(255, 105, 180, 0.32),
+        0 10px 35px rgba(255, 182, 193, 0.22),
+        0 0 80px rgba(255, 182, 193, 0.13),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.entry-date {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #ff69b4;
+    font-family: var(--font-display);
+}
+
+.entry-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-edit,
+.btn-delete {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 15px;
+    font-family: var(--font-body);
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-edit {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 182, 193, 1) 0%, rgba(255, 192, 203, 0.95) 100%),
+        linear-gradient(135deg, #ffb6c1 0%, #ffc0cb 100%);
+    background-size: 130% 130%, 100% 100%;
+    background-position: 0% 0%, 0% 0%;
+    color: #fff;
+    box-shadow: 
+        0 0 0 1px rgba(255, 182, 193, 0.3),
+        0 3px 10px rgba(255, 182, 193, 0.25),
+        0 0 20px rgba(255, 182, 193, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.btn-edit:hover {
+    transform: scale(1.12);
+    background-position: 50% 50%, 0% 0%;
+    box-shadow: 
+        0 0 0 2px rgba(255, 182, 193, 0.4),
+        0 6px 18px rgba(255, 182, 193, 0.35),
+        0 0 30px rgba(255, 182, 193, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.btn-delete {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 107, 157, 1) 0%, rgba(255, 143, 171, 0.95) 100%),
+        linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+    background-size: 130% 130%, 100% 100%;
+    background-position: 0% 0%, 0% 0%;
+    color: white;
+    box-shadow: 
+        0 0 0 1px rgba(255, 107, 157, 0.3),
+        0 3px 10px rgba(255, 107, 157, 0.25),
+        0 0 20px rgba(255, 107, 157, 0.15),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.btn-delete:hover {
+    transform: scale(1.12);
+    background-position: 50% 50%, 0% 0%;
+    box-shadow: 
+        0 0 0 2px rgba(255, 107, 157, 0.4),
+        0 6px 18px rgba(255, 107, 157, 0.35),
+        0 0 30px rgba(255, 107, 157, 0.22),
+        inset 0 1px 2px rgba(255, 255, 255, 0.35);
+}
+
+.entry-content {
+    color: #555;
+    line-height: 1.8;
+    font-size: 1em;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    padding: 15px;
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 248, 250, 0.6) 0%, rgba(255, 252, 253, 0.4) 100%),
+        linear-gradient(135deg, rgba(255, 182, 193, 0.03) 0%, rgba(255, 192, 203, 0.02) 100%);
+    border-radius: 12px;
+    font-family: var(--font-body);
+    box-shadow: 
+        inset 0 1px 2px rgba(255, 255, 255, 0.8),
+        inset 0 -1px 1px rgba(255, 182, 193, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.empty-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: #d4a5b8;
+    font-size: 1.2em;
+    font-style: italic;
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.diary-entry {
+    animation: fadeIn 0.5s ease;
+}
+
+/* カレンダー形式のレイアウト */
+.diary-calendar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 20px 0;
+}
+
+.diary-calendar-month {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.92) 100%),
+        radial-gradient(ellipse at bottom right, rgba(255, 248, 250, 0.4) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 250, 252, 0.95) 100%);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 
+        0 4px 20px rgba(255, 105, 180, 0.15),
+        0 1px 4px rgba(255, 105, 180, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    position: relative;
+    overflow: hidden;
+}
+
+.diary-calendar-month-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #ff69b4;
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: var(--font-display);
+}
+
+.diary-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.diary-calendar-weekday {
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #ff69b4;
+    padding: 8px 4px;
+}
+
+.diary-calendar-weeks {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.diary-calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.diary-calendar-day {
+    aspect-ratio: 1;
+    min-height: 80px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid rgba(255, 182, 193, 0.3);
+    border-radius: 12px;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.diary-calendar-day-other-month {
+    opacity: 0.4;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.diary-calendar-day-current-month {
+    opacity: 1;
+}
+
+.diary-calendar-day-has-entry {
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.25) 0%, rgba(255, 192, 203, 0.2) 100%);
+    border-color: rgba(255, 105, 180, 0.5);
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.2);
+}
+
+.diary-calendar-day-has-entry:hover {
+    transform: scale(1.05);
+    border-color: #ff69b4;
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.35) 0%, rgba(255, 192, 203, 0.3) 100%);
+}
+
+.diary-calendar-day-number {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+    flex-shrink: 0;
+}
+
+.diary-calendar-day-preview {
+    font-size: 0.4em;
+    color: #666;
+    line-height: 1.2;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    flex: 1;
+    width: 100%;
+    padding: 2px 0;
+    font-family: var(--font-body);
+}
+
+/* 日記参照モーダル */
+.diary-view-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.diary-view-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.diary-view-card {
+    background: 
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%),
+        radial-gradient(ellipse at bottom right, rgba(255, 248, 250, 0.5) 0%, transparent 60%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.99) 0%, rgba(255, 250, 252, 0.97) 100%);
+    border-radius: 24px;
+    padding: 32px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 
+        0 8px 32px rgba(255, 105, 180, 0.25),
+        0 2px 8px rgba(255, 105, 180, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.diary-view-modal.is-open .diary-view-card {
+    transform: scale(1);
+}
+
+.diary-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(255, 182, 193, 0.3);
+}
+
+.diary-view-header h2 {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #ff69b4;
+    font-family: var(--font-display);
+}
+
+.diary-view-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.8em;
+    color: #ff69b4;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.diary-view-close-btn:hover {
+    background: rgba(255, 105, 180, 0.1);
+    transform: rotate(90deg);
+}
+
+.diary-view-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.diary-view-date {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #ff69b4;
+    padding: 12px;
+    background: rgba(255, 182, 193, 0.1);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.diary-view-content {
+    color: #555;
+    line-height: 1.8;
+    font-size: 1em;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.diary-view-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    padding-top: 16px;
+    border-top: 2px solid rgba(255, 182, 193, 0.3);
+}
+
+.diary-view-actions .btn {
+    flex: 1;
+    max-width: 150px;
+    padding: 10px 20px;
+    font-size: 0.85em;
+    min-width: 100px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .diary-calendar-day {
+        min-height: 70px;
+        padding: 3px;
+    }
+
+    .diary-calendar-day-number {
+        font-size: 0.75em;
+    }
+
+    .diary-calendar-day-preview {
+        font-size: 0.6em;
+        -webkit-line-clamp: 2;
+    }
+
+    .diary-calendar-month {
+        padding: 16px;
+    }
+
+    .diary-calendar-month-title {
+        font-size: 1.3em;
+    }
+
+    .diary-view-card {
+        padding: 24px;
+        width: 95%;
+    }
+
+    .diary-view-content {
+        font-size: 0.95em;
+        padding: 16px;
+    }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2.5em;
+    }
+    
+    .subtitle {
+        font-size: 1em;
+    }
+    
+    .diary-editor,
+    .diary-list {
+        padding: 20px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+

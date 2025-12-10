@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- 背景（クリーム色） -->
+  <rect width="64" height="64" fill="#FFFACD" rx="8"/>
+  
+  <!-- ハートの縁取り（ティールグリーン） -->
+  <path d="M32,20 C28,16 22,18 22,24 C22,28 26,32 32,38 C38,32 42,28 42,24 C42,18 36,16 32,20 Z" 
+        fill="#87CEEB" 
+        stroke="#5F9EA0" 
+        stroke-width="1"/>
+  
+  <!-- ハートの塗りつぶし（ピンク） -->
+  <path d="M32,22 C29,19 24,20 24,25 C24,28 27,31 32,36 C37,31 40,28 40,25 C40,20 35,19 32,22 Z" 
+        fill="#FFB6C1"/>
+  
+  <!-- ピクセルアート風の装飾（小さな正方形） -->
+  <rect x="28" y="26" width="2" height="2" fill="#FFC0CB"/>
+  <rect x="30" y="28" width="2" height="2" fill="#FFC0CB"/>
+  <rect x="32" y="30" width="2" height="2" fill="#FFC0CB"/>
+  <rect x="34" y="28" width="2" height="2" fill="#FFC0CB"/>
+  <rect x="36" y="26" width="2" height="2" fill="#FFC0CB"/>
+</svg>
+

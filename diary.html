@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日記帳</title>
+    <link rel="stylesheet" href="diary.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-top-row">
+                <div class="header-title-block">
+                    <h1 class="title" id="page-title">日記帳</h1>
+                    <p class="subtitle">今日の気持ちを綴ってみませんか？</p>
+                    <p class="user-name-display" id="user-name-display"></p>
+                </div>
+                <div class="header-title-block" style="margin-top: 16px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                    <button id="go-remindodo-btn" class="btn btn-master" type="button">remindodoへ</button>
+                    <button id="go-kakeevo-btn" class="btn btn-master" type="button">kakeevoへ</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="diary-wrapper" id="diary-wrapper">
+            <div class="diary-editor">
+                <div class="editor-header">
+                    <h2>新しい日記を書く</h2>
+                </div>
+                <div class="editor-content">
+                    <input type="date" id="diary-date" class="date-input">
+                    <textarea id="diary-content" class="content-input" placeholder="今日はどんな一日でしたか？💭"></textarea>
+                    <div class="button-group">
+                        <button id="save-btn" class="btn btn-save">保存する</button>
+                        <button id="clear-btn" class="btn btn-clear">クリア</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="diary-list">
+                <div class="list-header">
+                    <h2>日記一覧</h2>
+                    <div class="list-header-actions">
+                        <button id="master-btn" class="btn btn-master" type="button">マスタメンテ</button>
+                    </div>
+                </div>
+                <div id="diary-entries" class="diary-calendar-container">
+                    <!-- カレンダー形式で日記エントリーがここに表示されます -->
+                </div>
+                <div class="list-footer-actions">
+                    <button id="clear-all-btn" class="btn btn-delete-all">すべて削除</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 日記参照モーダル -->
+        <div id="diary-view-modal" class="diary-view-modal" aria-hidden="true">
+            <div class="diary-view-card" role="dialog" aria-modal="true" aria-labelledby="diary-view-title">
+                <div class="diary-view-header">
+                    <h2 id="diary-view-title">日記を表示</h2>
+                    <button id="diary-view-close-btn" class="diary-view-close-btn" type="button">✕</button>
+                </div>
+                <div class="diary-view-body">
+                    <div class="diary-view-date" id="diary-view-date"></div>
+                    <div class="diary-view-content" id="diary-view-content"></div>
+                    <div class="diary-view-actions">
+                        <button id="diary-view-edit-btn" class="btn btn-save">編集</button>
+                        <button id="diary-view-delete-btn" class="btn btn-delete-all">削除</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- マスタメンテナンスパネル -->
+        <div id="master-panel" class="master-panel" aria-hidden="true">
+            <div class="master-card" role="dialog" aria-modal="true" aria-labelledby="master-title-label">
+                <div class="master-header">
+                    <h2 id="master-title-label">マスタメンテ</h2>
+                    <button id="master-close-btn" class="master-close-btn" type="button">とじる</button>
+                </div>
+                <div class="master-body">
+                    <div class="master-field">
+                        <label for="master-page-title">ページタイトル</label>
+                        <input type="text" id="master-page-title" class="master-input" placeholder="例：ゆかのひみつノート">
+                    </div>
+                    <div class="master-field">
+                        <label for="master-user-name">なまえ</label>
+                        <input type="text" id="master-user-name" class="master-input" placeholder="なまえを入れてね">
+                    </div>
+                    <div class="button-group master-button-group">
+                        <button id="master-save-btn" class="btn btn-save master-save-btn" type="button">設定を保存</button>
+                        <button id="master-cancel-btn" class="btn btn-clear master-cancel-btn" type="button">キャンセル</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="diary.js"></script>
+</body>
+</html>
+

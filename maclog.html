@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacLog - マクロ栄養素ログ</title>
+    <link rel="stylesheet" href="maclog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">MacLog</h1>
+            <p class="subtitle">食べたもののカロリーを記録し、今日あと何を食べればいいかが常にわかる</p>
+            <p class="user-name-display" id="user-name-display"></p>
+        </header>
+
+        <!-- 今日の残り栄養素表示 -->
+        <div class="remaining-nutrients-card" id="remaining-nutrients-card">
+            <h2>今日あと必要な栄養素</h2>
+            <div class="nutrients-grid">
+                <div class="nutrient-item">
+                    <div class="nutrient-label">タンパク質</div>
+                    <div class="nutrient-value" id="remaining-protein">-</div>
+                    <div class="nutrient-unit">g</div>
+                </div>
+                <div class="nutrient-item">
+                    <div class="nutrient-label">脂質</div>
+                    <div class="nutrient-value" id="remaining-fat">-</div>
+                    <div class="nutrient-unit">g</div>
+                </div>
+                <div class="nutrient-item">
+                    <div class="nutrient-label">炭水化物</div>
+                    <div class="nutrient-value" id="remaining-carb">-</div>
+                    <div class="nutrient-unit">g</div>
+                </div>
+                <div class="nutrient-item">
+                    <div class="nutrient-label">カロリー</div>
+                    <div class="nutrient-value" id="remaining-calorie">-</div>
+                    <div class="nutrient-unit">kcal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- タブナビゲーション -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="record">食べたものを登録</button>
+            <button class="tab-btn" data-tab="cooking">手料理を登録</button>
+            <button class="tab-btn" data-tab="target">目標設定</button>
+            <button class="tab-btn" data-tab="history">履歴</button>
+        </div>
+
+        <!-- 食べたものを登録 -->
+        <div class="tab-content active" id="tab-record">
+            <div class="card">
+                <h2>今食べたものを登録</h2>
+                <form id="record-form" class="form">
+                    <!-- 入力モード切り替え -->
+                    <div class="form-group">
+                        <div class="mode-toggle">
+                            <button type="button" class="mode-btn active" data-mode="direct">直接入力</button>
+                            <button type="button" class="mode-btn" data-mode="calc">計算モード</button>
+                        </div>
+                    </div>
+
+                    <!-- 直接入力モード -->
+                    <div id="direct-mode" class="input-mode">
+                        <div class="form-group">
+                            <label for="food-name">食べ物の名前</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="food-name" class="input" placeholder="例：白米" autocomplete="off" required>
+                                <div id="history-dropdown" class="history-dropdown"></div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="food-protein">タンパク質 (g)</label>
+                                <input type="number" id="food-protein" class="input" step="0.1" min="0" placeholder="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="food-fat">脂質 (g)</label>
+                                <input type="number" id="food-fat" class="input" step="0.1" min="0" placeholder="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="food-carb">炭水化物 (g)</label>
+                                <input type="number" id="food-carb" class="input" step="0.1" min="0" placeholder="0" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 計算モード -->
+                    <div id="calc-mode" class="input-mode" style="display: none;">
+                        <div class="form-group">
+                            <label for="calc-food-name">食べ物の名前</label>
+                            <div class="autocomplete-wrapper">
+                                <input type="text" id="calc-food-name" class="input" placeholder="例：白米" autocomplete="off" required>
+                                <div id="calc-history-dropdown" class="history-dropdown"></div>
+                            </div>
+                        </div>
+                        <div class="info-box">
+                            <p class="info-text">基準量あたりのPFCと実際の摂取量を入力すると、自動計算されます。</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="calc-base-amount">基準量 (g)</label>
+                            <input type="number" id="calc-base-amount" class="input" step="0.1" min="0" placeholder="例：100" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="calc-base-protein">基準タンパク質 (g)</label>
+                                <input type="number" id="calc-base-protein" class="input" step="0.1" min="0" placeholder="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="calc-base-fat">基準脂質 (g)</label>
+                                <input type="number" id="calc-base-fat" class="input" step="0.1" min="0" placeholder="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="calc-base-carb">基準炭水化物 (g)</label>
+                                <input type="number" id="calc-base-carb" class="input" step="0.1" min="0" placeholder="0" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="calc-consumed-amount">実際の摂取量 (g)</label>
+                            <input type="number" id="calc-consumed-amount" class="input" step="0.1" min="0" placeholder="例：150" required>
+                        </div>
+                        <div class="calc-result-box" id="calc-result-box" style="display: none;">
+                            <h3>計算結果</h3>
+                            <div class="calc-result-grid">
+                                <div class="calc-result-item">
+                                    <div class="calc-result-label">タンパク質</div>
+                                    <div class="calc-result-value" id="calc-result-protein">0g</div>
+                                </div>
+                                <div class="calc-result-item">
+                                    <div class="calc-result-label">脂質</div>
+                                    <div class="calc-result-value" id="calc-result-fat">0g</div>
+                                </div>
+                                <div class="calc-result-item">
+                                    <div class="calc-result-label">炭水化物</div>
+                                    <div class="calc-result-value" id="calc-result-carb">0g</div>
+                                </div>
+                                <div class="calc-result-item">
+                                    <div class="calc-result-label">カロリー</div>
+                                    <div class="calc-result-value" id="calc-result-calorie">0kcal</div>
+                                </div>
+                            </div>
+                            <button type="button" id="apply-calc-result" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">計算結果を適用</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="food-date">日付</label>
+                        <input type="date" id="food-date" class="input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 手料理を登録 -->
+        <div class="tab-content" id="tab-cooking">
+            <div class="card">
+                <h2>手料理のカロリー（PFC）を登録</h2>
+                <form id="cooking-form" class="form">
+                    <div class="form-group">
+                        <label for="cooking-name">料理名</label>
+                        <input type="text" id="cooking-name" class="input" placeholder="例：親子丼" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cooking-protein">タンパク質 (g)</label>
+                            <input type="number" id="cooking-protein" class="input" step="0.1" min="0" placeholder="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cooking-fat">脂質 (g)</label>
+                            <input type="number" id="cooking-fat" class="input" step="0.1" min="0" placeholder="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cooking-carb">炭水化物 (g)</label>
+                            <input type="number" id="cooking-carb" class="input" step="0.1" min="0" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cooking-date">日付</label>
+                        <input type="date" id="cooking-date" class="input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">登録</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 目標設定 -->
+        <div class="tab-content" id="tab-target">
+            <div class="card">
+                <h2>目標カロリー（PFC）を設定</h2>
+                <form id="target-form" class="form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="target-protein">タンパク質 (g)</label>
+                            <input type="number" id="target-protein" class="input" step="0.1" min="0" placeholder="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="target-fat">脂質 (g)</label>
+                            <input type="number" id="target-fat" class="input" step="0.1" min="0" placeholder="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="target-carb">炭水化物 (g)</label>
+                            <input type="number" id="target-carb" class="input" step="0.1" min="0" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <p>合計カロリー: <span id="target-calorie-display">0</span> kcal</p>
+                        <p class="info-text">※ タンパク質4kcal/g、脂質9kcal/g、炭水化物4kcal/gで計算</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary">目標を設定</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 履歴 -->
+        <div class="tab-content" id="tab-history">
+            <div class="card">
+                <h2>食事履歴</h2>
+                <div class="history-filter">
+                    <label for="history-date-filter">日付でフィルター:</label>
+                    <input type="date" id="history-date-filter" class="input">
+                    <button id="filter-today-btn" class="btn btn-secondary">今日</button>
+                </div>
+                <div id="history-list" class="history-list">
+                    <!-- 履歴がここに表示されます -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="maclog.js"></script>
+</body>
+</html>
+

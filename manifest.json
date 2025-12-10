@@ -1,0 +1,17 @@
+{
+  "name": "WonderPasNavi - ルート最適化ツール",
+  "short_name": "WonderPasNavi",
+  "description": "ディズニーランドのルート最適化ツール",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#FFB6C1",
+  "background_color": "#FFFACD",
+  "display": "standalone",
+  "start_url": "/route-optimizer.html"
+}
+

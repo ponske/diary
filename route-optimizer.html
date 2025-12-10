@@ -1,0 +1,3346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WonderPasNavi - ルートを決める</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#FFB6C1">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #5a5a5a;
+            position: relative;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* チェック柄の背景 */
+        body.checkerboard {
+            background-color: #FFE4E1;
+        }
+
+        body.checkerboard::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                /* 細い斜めの線（薄いピンクとパープル）- 1px幅 */
+                repeating-linear-gradient(
+                    45deg,
+                    transparent 0px,
+                    transparent 38px,
+                    rgba(255, 182, 193, 0.15) 38px,
+                    rgba(255, 182, 193, 0.15) 39px,
+                    transparent 39px,
+                    transparent 78px,
+                    rgba(221, 160, 221, 0.15) 78px,
+                    rgba(221, 160, 221, 0.15) 79px,
+                    transparent 79px
+                ),
+                /* 細い斜めの線（反対方向）- 1px幅 */
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent 0px,
+                    transparent 38px,
+                    rgba(255, 182, 193, 0.15) 38px,
+                    rgba(255, 182, 193, 0.15) 39px,
+                    transparent 39px,
+                    transparent 78px,
+                    rgba(221, 160, 221, 0.15) 78px,
+                    rgba(221, 160, 221, 0.15) 79px,
+                    transparent 79px
+                ),
+                /* 太い斜めのバンド（白とピンク）- 80px幅で太さを強調 */
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(255, 255, 255, 0.3) 0px,
+                    rgba(255, 255, 255, 0.3) 80px,
+                    rgba(255, 228, 225, 0.2) 80px,
+                    rgba(255, 228, 225, 0.2) 160px
+                ),
+                /* 太い斜めのバンド（反対方向）- 80px幅で太さを強調 */
+                repeating-linear-gradient(
+                    -45deg,
+                    rgba(255, 255, 255, 0.3) 0px,
+                    rgba(255, 255, 255, 0.3) 80px,
+                    rgba(255, 228, 225, 0.2) 80px,
+                    rgba(255, 228, 225, 0.2) 160px
+                );
+            z-index: -1;
+            transform: translate(-25%, -25%);
+        }
+
+        /* グラデーションの背景 */
+        body.gradient {
+            background: linear-gradient(135deg, #FFB6C1 0%, #B0E0E6 50%, #DDA0DD 100%);
+        }
+
+        body.gradient::before {
+            display: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* チェック柄背景の時のヘッダー */
+        body.checkerboard header {
+            color: #C71585;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        /* グラデーション背景の時のヘッダー */
+        body.gradient header {
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+            /* フォントの角を丸くする */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: "rlig" 1, "calt" 1;
+        }
+
+        /* チェック柄背景の時のタイトルスタイル（ガラス感） */
+        body.checkerboard header h1 {
+            color: #E91E63;
+            /* ガラス感の装飾 - 文字そのものに適用（薄く） */
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.7) 0%, rgba(233, 30, 99, 0.5) 50%, rgba(233, 30, 99, 0.7) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* 文字のふちを丸くする - 複数のtext-shadowで角を丸く */
+            text-shadow: 
+                /* 角を丸くするためのストローク効果 */
+                0.5px 0.5px 0 rgba(255, 182, 193, 0.3),
+                -0.5px 0.5px 0 rgba(255, 182, 193, 0.3),
+                0.5px -0.5px 0 rgba(255, 182, 193, 0.3),
+                -0.5px -0.5px 0 rgba(255, 182, 193, 0.3),
+                1px 1px 0 rgba(255, 182, 193, 0.2),
+                -1px 1px 0 rgba(255, 182, 193, 0.2),
+                1px -1px 0 rgba(255, 182, 193, 0.2),
+                -1px -1px 0 rgba(255, 182, 193, 0.2),
+                /* ガラス感の光沢 */
+                0 0 30px rgba(255, 182, 193, 0.4),
+                0 2px 8px rgba(255, 255, 255, 0.6),
+                0 0 60px rgba(255, 182, 193, 0.2),
+                inset 0 1px 2px rgba(255, 255, 255, 0.8);
+            filter: drop-shadow(0 2px 6px rgba(255, 182, 193, 0.5)) 
+                    drop-shadow(0 0 20px rgba(255, 182, 193, 0.3));
+            backdrop-filter: blur(10px);
+        }
+
+        /* グラデーション背景の時のタイトルスタイル（シンプル） */
+        body.gradient header h1 {
+            color: #fff;
+            text-shadow: 
+                0 2px 4px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(255, 255, 255, 0.3);
+            background: none;
+            -webkit-text-fill-color: #fff;
+        }
+
+        /* チェック柄背景の時のタイトルの光の反射 */
+        body.checkerboard header h1::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.3) 100%);
+            border-radius: 8px;
+            filter: blur(8px);
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        /* グラデーション背景の時は::beforeを非表示 */
+        body.gradient header h1::before {
+            display: none;
+        }
+
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* 今日の待ち時間リンクのスタイル */
+        .waiting-time-link {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #FF6B9D 0%, #C44569 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .waiting-time-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+            background: linear-gradient(135deg, #FF8FA3 0%, #D65A7A 100%);
+        }
+
+        .waiting-time-link:active {
+            transform: translateY(0);
+        }
+
+        /* チェック柄背景の時のリンク */
+        body.checkerboard .waiting-time-link {
+            background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.5);
+        }
+
+        body.checkerboard .waiting-time-link:hover {
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.7);
+            background: linear-gradient(135deg, #F06292 0%, #D81B60 100%);
+        }
+
+        /* グラデーション背景の時のリンク */
+        body.gradient .waiting-time-link {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        body.gradient .waiting-time-link:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* チェック柄背景の時のヘッダーp */
+        body.checkerboard header p {
+            color: #C71585;
+        }
+
+        /* グラデーション背景の時のヘッダーp */
+        body.gradient header p {
+            color: #fff;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .main-content.no-map {
+            grid-template-columns: 1fr;
+        }
+
+        .park-map {
+            background: white;
+            border-radius: 20px;
+            height: 600px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            display: none;
+        }
+
+        .park-map.visible {
+            display: block;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section {
+            padding: 15px;
+            background: linear-gradient(135deg, #FFFACD 0%, #F0E68C 100%);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .section h3 {
+            color: #DDA0DD;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* アトラクションカードグリッド */
+        .attraction-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            grid-auto-rows: 1fr; /* すべての行の高さを統一 */
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+        }
+
+        .attraction-card {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: 100%; /* グリッドセルの高さに合わせる */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .attraction-card.theater {
+            background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%);
+        }
+
+        .attraction-card.walking {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+        }
+
+        .attraction-card.greeting {
+            background: linear-gradient(135deg, #FFE4B5 0%, #FFD700 100%);
+        }
+
+        .attraction-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .attraction-card:not(.theater):not(.walking):not(.greeting):hover {
+            background: linear-gradient(135deg, #FFC0CB 0%, #FFB6C1 100%);
+        }
+
+        .attraction-card.theater:hover {
+            background: linear-gradient(135deg, #EE82EE 0%, #DDA0DD 100%);
+        }
+
+        .attraction-card.walking:hover {
+            background: linear-gradient(135deg, #FFC0CB 0%, #FFB6C1 100%);
+        }
+
+        .attraction-card.greeting:hover {
+            background: linear-gradient(135deg, #FFD700 0%, #FFE4B5 100%);
+        }
+
+        .attraction-card.selected {
+            border-color: #DDA0DD;
+            box-shadow: 0 4px 12px rgba(221, 160, 221, 0.4);
+        }
+
+        /* 優先度に応じた水色の濃さ */
+        .attraction-card.selected.priority-high {
+            background: linear-gradient(135deg, #5F9EA0 0%, #4682B4 100%); /* 濃い水色 */
+        }
+
+        .attraction-card.selected.priority-high .attraction-card-name {
+            color: #ffffff; /* 白文字で見やすく */
+        }
+
+        .attraction-card.selected.priority-medium {
+            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%); /* 中程度の水色 */
+        }
+
+        .attraction-card.selected.priority-low {
+            background: linear-gradient(135deg, #E0F6FF 0%, #F0F8FF 100%); /* 薄い水色 */
+        }
+
+        /* シアター型も通常の優先度に応じた水色を使用 */
+        .attraction-card.selected.theater.priority-high {
+            background: linear-gradient(135deg, #5F9EA0 0%, #4682B4 100%); /* 濃い水色 */
+        }
+
+        .attraction-card.selected.theater.priority-high .attraction-card-name {
+            color: #ffffff; /* 白文字で見やすく */
+        }
+
+        .attraction-card.selected.theater.priority-medium {
+            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%); /* 中程度の水色 */
+        }
+
+        .attraction-card.selected.theater.priority-low {
+            background: linear-gradient(135deg, #E0F6FF 0%, #F0F8FF 100%); /* 薄い水色 */
+        }
+
+        .attraction-card.selected.walking.priority-high {
+            background: linear-gradient(135deg, #5F9EA0 0%, #4682B4 100%);
+        }
+
+        .attraction-card.selected.walking.priority-high .attraction-card-name {
+            color: #ffffff; /* 白文字で見やすく */
+        }
+
+        .attraction-card.selected.walking.priority-medium {
+            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+        }
+
+        .attraction-card.selected.walking.priority-low {
+            background: linear-gradient(135deg, #E0F6FF 0%, #F0F8FF 100%);
+        }
+
+        .attraction-card-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #5a5a5a;
+            line-height: 1.3;
+            word-break: break-word;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        /* 21字以上の場合はテキストサイズを小さく */
+        .attraction-card-name.long-text {
+            font-size: 0.7rem;
+        }
+
+        .attraction-icon {
+            font-size: 1rem;
+        }
+
+        .icon-annotation-link {
+            display: block;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #5a5a5a;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .icon-annotation-link:hover {
+            color: #C71585;
+        }
+
+        .icon-annotation-list {
+            margin-top: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #5a5a5a;
+            display: none;
+        }
+
+        .icon-annotation-list.show {
+            display: block;
+        }
+
+        .icon-annotation-item {
+            margin-bottom: 6px;
+            padding: 4px 0;
+        }
+
+        .icon-annotation-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .priority-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card-order-number {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #DDA0DD;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #5a5a5a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .priority-high {
+            background: #FF69B4;
+        }
+
+        .priority-medium {
+            background: #DDA0DD;
+        }
+
+        .priority-low {
+            background: #D3D3D3;
+        }
+
+        .priority-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .priority-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #5a5a5a;
+        }
+
+        .priority-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .priority-btn.active {
+            background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%);
+            color: white;
+            border-color: #DDA0DD;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+        }
+
+        .btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            color: #5a5a5a;
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 182, 193, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+            color: white;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input[type="text"]:focus,
+        input[type="time"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #DDA0DD;
+            box-shadow: 0 0 0 3px rgba(221, 160, 221, 0.2);
+        }
+
+        .time-input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .time-input-group label {
+            font-size: 0.9rem;
+            color: #5a5a5a;
+            white-space: nowrap;
+        }
+
+        .time-input-group input {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .exit-option-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .exit-option-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #5a5a5a;
+            text-align: center;
+        }
+
+        .exit-option-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .exit-option-btn.active {
+            background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%);
+            color: white;
+            border-color: #DDA0DD;
+        }
+
+        #exitTimeInput.hidden {
+            display: none;
+        }
+
+        #exitTimeInput.visible {
+            display: block;
+        }
+
+        .list-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #FFFACD 0%, #F0E68C 100%);
+            border-radius: 10px;
+            border-left: 4px solid #DDA0DD;
+            font-size: 13px;
+        }
+
+        .list-item-name {
+            font-weight: 500;
+            flex: 1;
+            color: #5a5a5a;
+        }
+
+        .list-item-delete {
+            background: #FFB6C1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .list-item-delete:hover {
+            background: #FF69B4;
+        }
+
+        .result-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-box h2 {
+            color: #DDA0DD;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .route-list {
+            list-style: none;
+        }
+
+        .route-list li {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #FFFACD 0%, #F0E68C 100%);
+            border-left: 4px solid #DDA0DD;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: move;
+            position: relative;
+        }
+
+        .route-list li.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .route-list li.break-item {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            border-left: 4px solid #2196F3;
+            cursor: move;
+        }
+
+        .sortable-placeholder {
+            background: rgba(221, 160, 221, 0.3) !important;
+            border: 2px dashed #DDA0DD !important;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            height: 60px;
+        }
+
+        .route-list li.ui-sortable-helper {
+            opacity: 0.8;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .drop-zone {
+            height: 20px;
+            margin: 4px 0;
+            border: 2px dashed #DDA0DD;
+            border-radius: 5px;
+            background: rgba(221, 160, 221, 0.1);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: #DDA0DD;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(221, 160, 221, 0.3);
+            border-color: #EE82EE;
+            height: 40px;
+        }
+
+        .drop-zone.show {
+            display: flex;
+        }
+
+        .break-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .break-duration-input {
+            width: 80px;
+            padding: 4px 8px;
+            border: 1px solid #DDA0DD;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        .break-remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .break-remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .route-index {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            color: #5a5a5a;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 設定パネルスタイル */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .settings-panel:not(.hidden) {
+            display: flex;
+        }
+
+        .settings-panel.hidden {
+            display: none !important;
+        }
+
+        .settings-content {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .settings-header {
+            padding: 20px;
+            border-bottom: 2px solid #DDA0DD;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            color: #5a5a5a;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #5a5a5a;
+            line-height: 1;
+        }
+
+        .settings-body {
+            padding: 20px;
+        }
+
+        .settings-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-field label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .settings-field select {
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: white;
+        }
+
+        /* カスタム確認ダイアログスタイル */
+        .custom-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none;
+        }
+
+        .custom-dialog.show {
+            display: flex;
+        }
+
+        .custom-dialog-content {
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-dialog-header {
+            padding: 20px;
+            border-bottom: 2px solid #DDA0DD;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .custom-dialog-header h3 {
+            margin: 0;
+            color: #5a5a5a;
+            font-size: 1.2rem;
+        }
+
+        .custom-dialog-body {
+            padding: 20px;
+            color: #5a5a5a;
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        .custom-dialog-footer {
+            padding: 15px 20px;
+            border-top: 2px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .custom-dialog-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .custom-dialog-btn-primary {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            color: #5a5a5a;
+        }
+
+        .custom-dialog-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.4);
+        }
+
+        .custom-dialog-btn-secondary {
+            background: #f0f0f0;
+            color: #5a5a5a;
+        }
+
+        .custom-dialog-btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* スクロールバーのスタイル */
+        .attraction-grid::-webkit-scrollbar,
+        .list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .attraction-grid::-webkit-scrollbar-track,
+        .list-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .attraction-grid::-webkit-scrollbar-thumb,
+        .list-container::-webkit-scrollbar-thumb {
+            background: #DDA0DD;
+            border-radius: 10px;
+        }
+
+        .attraction-grid::-webkit-scrollbar-thumb:hover,
+        .list-container::-webkit-scrollbar-thumb:hover {
+            background: #EE82EE;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .park-map {
+                height: 400px;
+            }
+
+            .attraction-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+    </style>
+</head>
+    <body class="checkerboard">
+    <div class="container">
+        <header>
+            <div style="background: rgba(255, 193, 7, 0.2); border: 2px solid #FFC107; border-radius: 8px; padding: 8px 16px; margin-bottom: 15px; text-align: center;">
+                <strong style="color: #FF6F00;" data-i18n="demo-site">⚠️ デモサイト</strong>
+                <span style="color: #666; font-size: 0.9rem; margin-left: 8px;" data-i18n="demo-description">このサイトはデモ版です</span>
+            </div>
+            <div id="languageLinks" style="text-align: right; margin-bottom: 10px;">
+                <a href="#" onclick="event.preventDefault(); setLanguage('ja'); return false;" data-lang="ja" style="margin: 0 5px; color: #5a5a5a; text-decoration: none;">日本語</a>
+                <a href="#" onclick="event.preventDefault(); setLanguage('zh'); return false;" data-lang="zh" style="margin: 0 5px; color: #5a5a5a; text-decoration: none;">中文</a>
+                <a href="#" onclick="event.preventDefault(); setLanguage('en'); return false;" data-lang="en" style="margin: 0 5px; color: #5a5a5a; text-decoration: none;">English</a>
+                <a href="#" onclick="event.preventDefault(); setLanguage('ko'); return false;" data-lang="ko" style="margin: 0 5px; color: #5a5a5a; text-decoration: none;">한국어</a>
+            </div>
+            <h1 data-i18n="title">WonderPasNavi - ルートを決める</h1>
+            <p data-i18n="subtitle">アトラクションを選んで、効率的に巡るルートを決めましょう</p>
+            <a href="waiting-dashboard.html" class="waiting-time-link" data-i18n="today-waiting-times">📊 今日の待ち時間</a>
+        </header>
+
+        <div class="main-content no-map">
+            <div class="park-map">
+                <div id="map"></div>
+            </div>
+
+            <div class="control-panel">
+                <div class="section">
+                    <h3 data-i18n="attraction-selection">🎢 アトラクション選択</h3>
+                    <div class="priority-selector">
+                        <button class="priority-btn active" data-priority="high" onclick="setPriority('high')" data-i18n="priority-high">高</button>
+                        <button class="priority-btn" data-priority="medium" onclick="setPriority('medium')" data-i18n="priority-medium">中</button>
+                        <button class="priority-btn" data-priority="low" onclick="setPriority('low')" data-i18n="priority-low">低</button>
+                    </div>
+                    <div class="attraction-grid" id="attractionGrid"></div>
+                    <a href="#" class="icon-annotation-link" id="iconAnnotationLink" onclick="event.preventDefault(); toggleIconAnnotations(); return false;" data-i18n="view-annotations">注釈を見る</a>
+                    <div class="icon-annotation-list" id="iconAnnotationList"></div>
+                </div>
+
+                <div class="section">
+                    <h3 data-i18n="selected-attractions">📋 選択済みアトラクション</h3>
+                    <div class="list-container" id="attractionList"></div>
+                </div>
+
+                <div class="section">
+                    <h3 data-i18n="time-settings">⏰ 時間設定</h3>
+                    <div style="display: flex; gap: 15px; align-items: flex-start;">
+                        <div style="flex: 1;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: #5a5a5a;" data-i18n="start-time">開始時刻:</label>
+                            <input type="time" id="startTime" value="09:00" min="08:00" max="21:00" style="width: 60%; padding: 10px; border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 10px; font-size: 14px; background: rgba(255, 255, 255, 0.8);" onchange="validateStartTime()">
+                        </div>
+                        <div style="flex: 1; margin-bottom: 10px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: #5a5a5a;" data-i18n="exit-time">退園時刻:</label>
+                            <div class="exit-option-group">
+                                <button class="exit-option-btn active" onclick="setExitOption('until', this)" data-i18n="until-closing">閉園まで</button>
+                                <button class="exit-option-btn" onclick="setExitOption('time', this)" data-i18n="specify-time">時刻指定</button>
+                            </div>
+                            <input type="time" id="exitTimeInput" value="21:00" min="08:00" max="21:00" class="hidden" onchange="validateExitTime()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 data-i18n="optimize-route">🛣️ ルートを決める</h3>
+                    <button class="btn btn-primary" onclick="optimizeRoute()" data-i18n="optimize-button">🛣️ ルートを決める</button>
+                    <button class="btn btn-danger" onclick="clearRoute()" data-i18n="clear-button">🗑️ クリア</button>
+                </div>
+
+                <div class="section">
+                    <h3 data-i18n="settings">⚙️ 設定</h3>
+                    <button class="btn btn-primary" onclick="openSettings()" style="margin-bottom: 8px;" data-i18n="display-settings">⚙️ 表示設定</button>
+                    <a href="master-maintenance.html" style="display: block; text-align: center; padding: 10px; background: linear-gradient(135deg, #DDA0DD 0%, #EE82EE 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin-bottom: 8px;" data-i18n="edit-attraction-info">📝 アトラクション情報編集</a>
+                    <p style="font-size: 0.8rem; color: #999; text-align: center; margin: 0;" data-i18n="edit-description">所要時間・ジャンルを編集できます</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 設定パネル -->
+        <div id="settingsPanel" class="settings-panel hidden">
+            <div class="settings-content">
+                <div class="settings-header">
+                    <h2 data-i18n="display-settings">⚙️ 表示設定</h2>
+                    <button class="settings-close" onclick="closeSettings()">&times;</button>
+                </div>
+                <div class="settings-body">
+                    <div class="settings-field">
+                        <label data-i18n="background-style">背景スタイル</label>
+                        <select id="backgroundStyleSelect" onchange="updateBackgroundStyle()">
+                            <option value="checkerboard" data-i18n="checkerboard">チェック柄</option>
+                            <option value="gradient" data-i18n="gradient">グラデーション</option>
+                        </select>
+                    </div>
+                    <div class="settings-field">
+                        <label data-i18n="result-title">結果のタイトル</label>
+                        <select id="resultTitleSelect" onchange="updateResultTitle()">
+                            <option value="まわるじゅんばん" data-i18n="title-option-1">まわるじゅんばん</option>
+                            <option value="おすすめのルート" data-i18n="title-option-2">おすすめのルート</option>
+                            <option value="こんなルートはどう？" data-i18n="title-option-3">こんなルートはどう？</option>
+                            <option value="まわるじゅん" data-i18n="title-option-4">まわるじゅん</option>
+                            <option value="ルート案" data-i18n="title-option-5">ルート案</option>
+                            <option value="おすすめルート" data-i18n="title-option-6">おすすめルート</option>
+                            <option value="回る順番" data-i18n="title-option-7">回る順番</option>
+                            <option value="ルートプラン" data-i18n="title-option-8">ルートプラン</option>
+                        </select>
+                    </div>
+                    <div class="settings-field">
+                        <label data-i18n="route-optimization-method">ルート最適化方法</label>
+                        <select id="routeOptimizationSelect" onchange="updateRouteOptimization()">
+                            <option value="distance" data-i18n="optimize-by-distance">距離最短</option>
+                            <option value="time" data-i18n="optimize-by-time">時間最短</option>
+                            <option value="selection-order" data-i18n="optimize-by-selection-order">選択順</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- カスタム確認ダイアログ -->
+        <div id="customDialog" class="custom-dialog">
+            <div class="custom-dialog-content">
+                <div class="custom-dialog-header">
+                    <h3 id="customDialogTitle">確認</h3>
+                </div>
+                <div class="custom-dialog-body" id="customDialogMessage"></div>
+                <div class="custom-dialog-footer">
+                    <button class="custom-dialog-btn custom-dialog-btn-secondary" id="customDialogCancelBtn">キャンセル</button>
+                    <button class="custom-dialog-btn custom-dialog-btn-secondary" id="customDialogRecreateBtn">低優先度のものを削除し再作成</button>
+                    <button class="custom-dialog-btn custom-dialog-btn-primary" id="customDialogConfirmBtn">そのまま表示</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultBox" class="result-box hidden">
+            <h2 id="resultTitle">📊 まわるじゅんばん</h2>
+            <div style="margin-bottom: 15px;">
+                <p><strong data-i18n="total-distance">総移動距離:</strong> <span id="totalDistance">0</span> m</p>
+                <p><strong data-i18n="route-points">ルート上のポイント数:</strong> <span id="routeLength">0</span></p>
+            </div>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="downloadMapAsImage()" style="flex: 1; min-width: 150px;" data-i18n="download-map">🗺️ 地図を画像で保存</button>
+                <button class="btn btn-primary" onclick="copyRouteToClipboard()" style="flex: 1; min-width: 150px;" data-i18n="copy-route">📋 ルート順序をコピー</button>
+                <button class="btn btn-primary" onclick="addBreakAtEnd()" style="flex: 1; min-width: 150px;" data-i18n="add-break">☕ 休憩を追加</button>
+            </div>
+            <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;" data-i18n="drag-instruction">💡 カードをドラッグして順番を変更できます。リストアイテムの間をクリックして休憩を追加することもできます。</p>
+            <ul class="route-list" id="resultList"></ul>
+        </div>
+
+        <!-- Buy Me a Coffee Button -->
+        <div id="supportButtonContainer" style="text-align: center; margin-top: 30px; padding: 20px;">
+            <script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="lira_dev" data-color="#40DCA5" data-emoji="🦄" data-font="Bree" data-text="ここから応援する" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00"></script>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jQuery UI for Sortable -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        // 多言語対応データ
+        const i18n = {
+            ja: {
+                'demo-site': '⚠️ デモサイト',
+                'demo-description': 'このサイトはデモ版です',
+                'title': 'WonderPasNavi - ルートを決める',
+                'subtitle': 'アトラクションを選んで、効率的に巡るルートを決めましょう',
+                'today-waiting-times': '📊 今日の待ち時間',
+                'attraction-selection': '🎢 アトラクション選択',
+                'priority-high': '高',
+                'priority-medium': '中',
+                'priority-low': '低',
+                'view-annotations': '注釈を見る',
+                'selected-attractions': '📋 選択済みアトラクション',
+                'time-settings': '⏰ 時間設定',
+                'start-time': '開始時刻:',
+                'exit-time': '退園時刻:',
+                'until-closing': '閉園まで',
+                'specify-time': '時刻指定',
+                'optimize-route': '🛣️ ルートを決める',
+                'optimize-button': '🛣️ ルートを決める',
+                'clear-button': '🗑️ クリア',
+                'settings': '⚙️ 設定',
+                'display-settings': '⚙️ 表示設定',
+                'edit-attraction-info': '📝 アトラクション情報編集',
+                'edit-description': '所要時間・ジャンルを編集できます',
+                'background-style': '背景スタイル',
+                'checkerboard': 'チェック柄',
+                'gradient': 'グラデーション',
+                'result-title': '結果のタイトル',
+                'title-option-1': 'まわるじゅんばん',
+                'title-option-2': 'おすすめのルート',
+                'title-option-3': 'こんなルートはどう？',
+                'title-option-4': 'まわるじゅん',
+                'title-option-5': 'ルート案',
+                'title-option-6': 'おすすめルート',
+                'title-option-7': '回る順番',
+                'title-option-8': 'ルートプラン',
+                'total-distance': '総移動距離:',
+                'route-points': 'ルート上のポイント数:',
+                'select-attractions': 'アトラクションを選択してください',
+                'priority': '優先度:',
+                'delete': '削除',
+                'travel': '移動',
+                'arrival': '到着',
+                'waiting': '待ち',
+                'duration': '所要',
+                'departure': '出発',
+                'minutes': '分',
+                'at-time': '時点',
+                'support-button': 'ここから応援する',
+                'download-map': '🗺️ 地図を画像で保存',
+                'copy-route': '📋 ルート順序をコピー',
+                'map-downloaded': '地図を画像として保存しました',
+                'route-copied': 'ルート順序をクリップボードにコピーしました',
+                'copy-failed': 'コピーに失敗しました',
+                'closing-time-exceeded': '⚠️ 閉園時刻（{time}）を超えるアトラクションがあります:',
+                'exit-time-exceeded': '⚠️ パークを出る時刻（{time}）を超えるアトラクションがあります:',
+                'departure-scheduled': '出発予定',
+                'arrival-scheduled': '到着予定',
+                'continue-display': 'このまま表示しますか？それとも低優先度のアトラクションを除外してルートを再作成しますか？',
+                'recreate-route-confirm': '低優先度のアトラクションを除外してルートを再作成しますか？',
+                'recreate-route-confirm-title': '確認',
+                'display-as-is': 'そのまま表示',
+                'recreate-route': 'ルート再作成',
+                'recreate-route-low-priority': '低優先度のものを削除し再作成',
+                'recreate': '再作成',
+                'cancel': 'キャンセル',
+                'insufficient-attractions': '時間が不足しています。閉園時刻内に周り切れるアトラクションを選択してください。',
+                'closing-time-exceeded-warning': '⚠️ 閉園時刻超過',
+                'route-optimization-method': 'ルート最適化方法',
+                'optimize-by-distance': '距離最短',
+                'optimize-by-time': '時間最短',
+                'optimize-by-selection-order': '選択順',
+                'add-break': '☕ 休憩を追加',
+                'break': '休憩',
+                'drag-instruction': '💡 カードをドラッグして順番を変更できます。リストアイテムをダブルクリックして休憩を追加することもできます。'
+            },
+            zh: {
+                'demo-site': '⚠️ 演示网站',
+                'demo-description': '此网站为演示版本',
+                'title': 'WonderPasNavi - 路线规划',
+                'subtitle': '选择景点，规划高效的游览路线',
+                'today-waiting-times': '📊 今日等待时间',
+                'attraction-selection': '🎢 选择景点',
+                'priority-high': '高',
+                'priority-medium': '中',
+                'priority-low': '低',
+                'view-annotations': '查看注释',
+                'selected-attractions': '📋 已选景点',
+                'time-settings': '⏰ 时间设置',
+                'start-time': '开始时间:',
+                'exit-time': '离园时间:',
+                'until-closing': '闭园前',
+                'specify-time': '指定时间',
+                'optimize-route': '🛣️ 规划路线',
+                'optimize-button': '🛣️ 规划路线',
+                'clear-button': '🗑️ 清除',
+                'settings': '⚙️ 设置',
+                'display-settings': '⚙️ 显示设置',
+                'edit-attraction-info': '📝 编辑景点信息',
+                'edit-description': '可以编辑所需时间和类型',
+                'background-style': '背景样式',
+                'checkerboard': '格子图案',
+                'gradient': '渐变',
+                'result-title': '结果标题',
+                'title-option-1': '游览顺序',
+                'title-option-2': '推荐路线',
+                'title-option-3': '这样的路线怎么样？',
+                'title-option-4': '游览顺序',
+                'title-option-5': '路线方案',
+                'title-option-6': '推荐路线',
+                'title-option-7': '游览顺序',
+                'title-option-8': '路线计划',
+                'total-distance': '总移动距离:',
+                'route-points': '路线上的景点数:',
+                'select-attractions': '请选择景点',
+                'priority': '优先级:',
+                'delete': '删除',
+                'travel': '移动',
+                'arrival': '到达',
+                'waiting': '等待',
+                'duration': '所需',
+                'departure': '出发',
+                'minutes': '分钟',
+                'at-time': '时点',
+                'support-button': '支持这个创作者',
+                'download-map': '🗺️ 保存地图为图片',
+                'copy-route': '📋 复制路线顺序',
+                'map-downloaded': '地图已保存为图片',
+                'route-copied': '路线顺序已复制到剪贴板',
+                'copy-failed': '复制失败',
+                'closing-time-exceeded': '⚠️ 有超过闭园时间（{time}）的景点:',
+                'exit-time-exceeded': '⚠️ 有超过出园时间（{time}）的景点:',
+                'departure-scheduled': '预计出发',
+                'arrival-scheduled': '预计到达',
+                'continue-display': '是否继续显示？还是排除低优先级景点重新规划路线？',
+                'recreate-route-confirm': '是否排除低优先级景点重新规划路线？',
+                'recreate-route-confirm-title': '确认',
+                'display-as-is': '继续显示',
+                'recreate-route': '重新规划路线',
+                'recreate-route-low-priority': '删除低优先级景点并重新规划',
+                'recreate': '重新规划',
+                'cancel': '取消',
+                'insufficient-attractions': '时间不足。请选择能在闭园时间内游览完的景点。',
+                'closing-time-exceeded-warning': '⚠️ 超过闭园时间',
+                'route-optimization-method': '路线优化方法',
+                'optimize-by-distance': '距离最短',
+                'optimize-by-time': '时间最短',
+                'optimize-by-selection-order': '选择顺序',
+                'add-break': '添加休息',
+                'break': '休息',
+                'drag-instruction': '💡 可以拖动卡片更改顺序。也可以双击列表项添加休息。'
+            },
+            en: {
+                'demo-site': '⚠️ Demo Site',
+                'demo-description': 'This site is a demo version',
+                'title': 'WonderPasNavi - Route Planner',
+                'subtitle': 'Select attractions and plan an efficient route',
+                'today-waiting-times': '📊 Today\'s Wait Times',
+                'attraction-selection': '🎢 Select Attractions',
+                'priority-high': 'High',
+                'priority-medium': 'Medium',
+                'priority-low': 'Low',
+                'view-annotations': 'View Annotations',
+                'selected-attractions': '📋 Selected Attractions',
+                'time-settings': '⏰ Time Settings',
+                'start-time': 'Start Time:',
+                'exit-time': 'Exit Time:',
+                'until-closing': 'Until Closing',
+                'specify-time': 'Specify Time',
+                'optimize-route': '🛣️ Plan Route',
+                'optimize-button': '🛣️ Plan Route',
+                'clear-button': '🗑️ Clear',
+                'settings': '⚙️ Settings',
+                'display-settings': '⚙️ Display Settings',
+                'edit-attraction-info': '📝 Edit Attraction Info',
+                'edit-description': 'You can edit duration and genre',
+                'background-style': 'Background Style',
+                'checkerboard': 'Checkerboard',
+                'gradient': 'Gradient',
+                'result-title': 'Result Title',
+                'title-option-1': 'Visit Order',
+                'title-option-2': 'Recommended Route',
+                'title-option-3': 'How about this route?',
+                'title-option-4': 'Visit Order',
+                'title-option-5': 'Route Plan',
+                'title-option-6': 'Recommended Route',
+                'title-option-7': 'Visit Order',
+                'title-option-8': 'Route Plan',
+                'total-distance': 'Total Distance:',
+                'route-points': 'Points on Route:',
+                'select-attractions': 'Please select attractions',
+                'priority': 'Priority:',
+                'delete': 'Delete',
+                'travel': 'Travel',
+                'arrival': 'Arrival',
+                'waiting': 'Wait',
+                'duration': 'Duration',
+                'departure': 'Departure',
+                'minutes': 'min',
+                'at-time': 'at',
+                'support-button': 'Buy Me a Coffee',
+                'download-map': '🗺️ Save Map as Image',
+                'copy-route': '📋 Copy Route Order',
+                'map-downloaded': 'Map saved as image',
+                'route-copied': 'Route order copied to clipboard',
+                'copy-failed': 'Copy failed',
+                'closing-time-exceeded': '⚠️ There are attractions that exceed closing time ({time}):',
+                'exit-time-exceeded': '⚠️ There are attractions that exceed exit time ({time}):',
+                'departure-scheduled': 'Scheduled Departure',
+                'arrival-scheduled': 'Scheduled Arrival',
+                'continue-display': 'Do you want to continue displaying? Or recreate the route by excluding low-priority attractions?',
+                'recreate-route-confirm': 'Do you want to recreate the route by excluding low-priority attractions?',
+                'recreate-route-confirm-title': 'Confirm',
+                'display-as-is': 'Display As Is',
+                'recreate-route': 'Recreate Route',
+                'recreate-route-low-priority': 'Remove Low Priority and Recreate',
+                'recreate': 'Recreate',
+                'cancel': 'Cancel',
+                'insufficient-attractions': 'Insufficient time. Please select attractions that can be visited within closing time.',
+                'closing-time-exceeded-warning': '⚠️ Exceeds Closing Time',
+                'route-optimization-method': 'Route Optimization Method',
+                'optimize-by-distance': 'Shortest Distance',
+                'optimize-by-time': 'Shortest Time',
+                'optimize-by-selection-order': 'Selection Order',
+                'add-break': 'Add Break',
+                'break': 'Break',
+                'drag-instruction': '💡 You can drag cards to change the order. You can also double-click a list item to add a break.'
+            },
+            ko: {
+                'demo-site': '⚠️ 데모 사이트',
+                'demo-description': '이 사이트는 데모 버전입니다',
+                'title': 'WonderPasNavi - 루트 계획',
+                'subtitle': '어트랙션을 선택하고 효율적인 루트를 계획하세요',
+                'today-waiting-times': '📊 오늘의 대기 시간',
+                'attraction-selection': '🎢 어트랙션 선택',
+                'priority-high': '높음',
+                'priority-medium': '보통',
+                'priority-low': '낮음',
+                'view-annotations': '주석 보기',
+                'selected-attractions': '📋 선택된 어트랙션',
+                'time-settings': '⏰ 시간 설정',
+                'start-time': '시작 시간:',
+                'exit-time': '퇴원 시간:',
+                'until-closing': '폐원까지',
+                'specify-time': '시간 지정',
+                'optimize-route': '🛣️ 루트 계획',
+                'optimize-button': '🛣️ 루트 계획',
+                'clear-button': '🗑️ 지우기',
+                'settings': '⚙️ 설정',
+                'display-settings': '⚙️ 표시 설정',
+                'edit-attraction-info': '📝 어트랙션 정보 편집',
+                'edit-description': '소요 시간 및 장르를 편집할 수 있습니다',
+                'background-style': '배경 스타일',
+                'checkerboard': '체크 무늬',
+                'gradient': '그라데이션',
+                'result-title': '결과 제목',
+                'title-option-1': '방문 순서',
+                'title-option-2': '추천 루트',
+                'title-option-3': '이런 루트는 어떠세요?',
+                'title-option-4': '방문 순서',
+                'title-option-5': '루트 안',
+                'title-option-6': '추천 루트',
+                'title-option-7': '방문 순서',
+                'title-option-8': '루트 계획',
+                'total-distance': '총 이동 거리:',
+                'route-points': '루트상의 포인트 수:',
+                'select-attractions': '어트랙션을 선택해주세요',
+                'priority': '우선순위:',
+                'delete': '삭제',
+                'travel': '이동',
+                'arrival': '도착',
+                'waiting': '대기',
+                'duration': '소요',
+                'departure': '출발',
+                'minutes': '분',
+                'at-time': '시점',
+                'support-button': '이 크리에이터 후원하기',
+                'download-map': '🗺️ 지도를 이미지로 저장',
+                'copy-route': '📋 루트 순서 복사',
+                'map-downloaded': '지도를 이미지로 저장했습니다',
+                'route-copied': '루트 순서를 클립보드에 복사했습니다',
+                'copy-failed': '복사에 실패했습니다',
+                'closing-time-exceeded': '⚠️ 폐원 시간({time})을 초과하는 어트랙션이 있습니다:',
+                'exit-time-exceeded': '⚠️ 파크를 나가는 시간({time})을 초과하는 어트랙션이 있습니다:',
+                'departure-scheduled': '출발 예정',
+                'arrival-scheduled': '도착 예정',
+                'continue-display': '계속 표시하시겠습니까? 아니면 낮은 우선순위 어트랙션을 제외하고 루트를 다시 만들까요?',
+                'recreate-route-confirm': '낮은 우선순위 어트랙션을 제외하고 루트를 다시 만들까요?',
+                'recreate-route-confirm-title': '확인',
+                'display-as-is': '그대로 표시',
+                'recreate-route': '루트 다시 만들기',
+                'recreate-route-low-priority': '낮은 우선순위 제거 후 다시 만들기',
+                'recreate': '다시 만들기',
+                'cancel': '취소',
+                'insufficient-attractions': '시간이 부족합니다. 폐원 시간 내에 돌 수 있는 어트랙션을 선택해주세요.',
+                'closing-time-exceeded-warning': '⚠️ 폐원 시간 초과',
+                'route-optimization-method': '루트 최적화 방법',
+                'optimize-by-distance': '거리 최단',
+                'optimize-by-time': '시간 최단',
+                'optimize-by-selection-order': '선택 순서',
+                'add-break': '휴식 추가',
+                'break': '휴식',
+                'drag-instruction': '💡 카드를 드래그하여 순서를 변경할 수 있습니다. 목록 항목을 더블 클릭하여 휴식을 추가할 수도 있습니다.'
+            }
+        };
+
+        // 現在の言語を取得（デフォルトは日本語）
+        let currentLanguage = localStorage.getItem('language') || 'ja';
+
+        // 言語を設定（グローバルスコープに公開）
+        window.setLanguage = function(lang) {
+            currentLanguage = lang;
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+            applyLanguage();
+            updateLanguageLinks();
+            // アトラクション名を翻訳
+            availableAttractions.forEach(attr => {
+                attr.translatedName = translateAttractionName(attr.name, lang);
+            });
+            selectedAttractions.forEach(attr => {
+                attr.translatedName = translateAttractionName(attr.name, lang);
+            });
+            // Buy Me a Coffeeボタンを更新
+            updateSupportButton();
+            // リストや結果も再描画
+            renderAttractionCards();
+            updateAttractionList();
+            renderMarkers();
+            if (document.getElementById('resultBox') && !document.getElementById('resultBox').classList.contains('hidden')) {
+                const route = selectedAttractions; // 現在のルートを再表示
+                displayResult(route);
+            }
+        };
+
+        // Buy Me a Coffeeボタンを更新（言語変更時）
+        function updateSupportButton() {
+            const container = document.getElementById('supportButtonContainer');
+            if (!container) return;
+            
+            // 既存のスクリプトのdata-text属性を更新
+            const existingScript = container.querySelector('script[src*="buymeacoffee"]');
+            if (existingScript && i18n[currentLanguage] && i18n[currentLanguage]['support-button']) {
+                existingScript.setAttribute('data-text', i18n[currentLanguage]['support-button']);
+                // Buy Me a Coffeeのスクリプトは一度読み込まれると、data属性の変更だけでは更新されないため、
+                // ボタン要素を再生成する必要がある場合がある
+                // ただし、document.write()の問題があるため、ここではdata属性のみ更新
+            }
+        }
+
+        // 言語リンクの表示を更新
+        function updateLanguageLinks() {
+            document.querySelectorAll('[data-lang]').forEach(link => {
+                if (link.dataset.lang === currentLanguage) {
+                    link.style.fontWeight = 'bold';
+                    link.style.color = '#C71585';
+                } else {
+                    link.style.fontWeight = 'normal';
+                    link.style.color = '#5a5a5a';
+                }
+            });
+        }
+
+        // 言語を適用
+        function applyLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (i18n[currentLanguage] && i18n[currentLanguage][key]) {
+                    if (element.tagName === 'INPUT' && element.type === 'submit') {
+                        element.value = i18n[currentLanguage][key];
+                    } else if (element.tagName === 'OPTION') {
+                        element.textContent = i18n[currentLanguage][key];
+                    } else {
+                        element.textContent = i18n[currentLanguage][key];
+                    }
+                }
+            });
+            
+            // 言語リンクのテキストを更新（常に表示）
+            const langLinks = document.querySelectorAll('[data-lang]');
+            langLinks.forEach(link => {
+                const lang = link.dataset.lang;
+                if (lang === 'ja') {
+                    link.textContent = '日本語';
+                } else if (lang === 'zh') {
+                    link.textContent = '中文';
+                } else if (lang === 'en') {
+                    link.textContent = 'English';
+                } else if (lang === 'ko') {
+                    link.textContent = '한국어';
+                }
+            });
+        }
+
+        // グローバル変数
+        let map = null;
+        let attractionsMetadata = {}; // Firestoreから読み込んだメタデータ（所要時間、ジャンル）
+        let selectedAttractions = [];
+        let availableAttractions = [];
+        let markers = [];
+        let routeLayer = null;
+        let currentPriority = 'high';
+        let exitOption = 'until'; // 'until' or 'time'
+        let waitingTimesData = {}; // attr_id -> {waiting_minutes: number, time_series: array}
+        let currentRouteData = null; // 現在のルートデータ（休憩を含む）
+        let currentRouteStartTime = null; // ルートの開始時刻
+        let currentRouteExitTime = null; // ルートの退園時刻
+        let currentWalkingSpeed = 80; // 歩行速度（分速80m）
+
+        // 東京ディズニーランドの中心座標
+        const DISNEY_LAND_CENTER = [35.6329, 139.8804];
+
+        // ジャンルコードから情報を取得
+        function getGenreInfo(genreCode) {
+            const genreMap = {
+                'theater': { genre: 'theater', icon: '🏛️', duration: 20, isSeated: true, description: '座れるアトラクション（屋内シアター型）' },
+                'ride': { genre: 'ride', icon: '🎠', duration: 10, isSeated: true, description: 'ライド' },
+                'indoor_ride': { genre: 'ride', icon: '🎠', duration: 10, isSeated: true, description: 'ライド' }, // 後方互換性
+                'outdoor_ride': { genre: 'ride', icon: '🎠', duration: 10, isSeated: true, description: 'ライド' }, // 後方互換性
+                'coaster': { genre: 'coaster', icon: '🎢', duration: 3, isSeated: false, description: 'コースター' },
+                'water_ride': { genre: 'coaster', icon: '🎢', duration: 3, isSeated: false, description: 'コースター' }, // 急流すべりをコースターに統合
+                'walking': { genre: 'walking', icon: '🏰', duration: 10, isSeated: false, description: '歩いて探索系' },
+                'other': { genre: 'other', icon: '🎡', duration: 5, isSeated: false, description: 'その他' }
+            };
+            return genreMap[genreCode] || genreMap['other'];
+        }
+
+        // アトラクションジャンル判定（デフォルト）
+        function getAttractionGenre(name) {
+            // 座れるアトラクション（屋内シアター型）
+            const theaterKeywords = ['シアター', 'ショー', 'フィルハーマジック', 'ホール', 'エンカウンター', 'チキルーム'];
+            // コースター（ジェットコースター + 急流すべり）
+            const coasterKeywords = ['コースター', 'マウンテン', 'ビッグサンダー', 'スペース・マウンテン', 'スプラッシュ', '急流', 'すべり'];
+            // ライド（室内ライド + 屋外ライド）
+            const rideKeywords = ['ホーンテッドマンション', 'ピーターパン', 'プーさん', 'イッツ・ア・スモールワールド', 'ピノキオ', '白雪姫', 'ロジャーラビット', 'カリブの海賊', 'ジャングルクルーズ', 'スター・ツアーズ', 'モンスターズ・インク', '美女と野獣', 'クルーズ', '鉄道', 'いかだ', 'カヌー', 'ボート', 'オムニバス', '蒸気船', 'マークトウェイン', '空飛ぶダンボ', 'ベイマックス'];
+            // 歩いて探索系
+            const walkingKeywords = ['フェアリーテイル', '家', 'ハウス'];
+            
+            // その他に分類するアトラクションを先にチェック
+            if (name.includes('グーフィー') && name.includes('ペイント')) {
+                return { genre: 'other', icon: '🎡', duration: 5, isSeated: false, description: 'その他' };
+            }
+            
+            // 歩いて探索系を先にチェック（「フェアリーテイル・ホール」がシアターに分類されないように）
+            if (walkingKeywords.some(keyword => name.includes(keyword))) {
+                return { genre: 'walking', icon: '🏰', duration: 10, isSeated: false, description: '歩いて探索系' };
+            } else if (theaterKeywords.some(keyword => name.includes(keyword))) {
+                return { genre: 'theater', icon: '🏛️', duration: 20, isSeated: true, description: '座れるアトラクション（屋内シアター型）' };
+            } else if (coasterKeywords.some(keyword => name.includes(keyword))) {
+                return { genre: 'coaster', icon: '🎢', duration: 3, isSeated: false, description: 'コースター' };
+            } else if (rideKeywords.some(keyword => name.includes(keyword))) {
+                return { genre: 'ride', icon: '🎠', duration: 10, isSeated: true, description: 'ライド' };
+            }
+            // デフォルト
+            return { genre: 'other', icon: '🎡', duration: 5, isSeated: false, description: 'その他' };
+        }
+
+        // アトラクションアイコン取得（後方互換性のため）
+        function getAttractionIcon(genreOrType) {
+            if (typeof genreOrType === 'object' && genreOrType.icon) {
+                return genreOrType.icon;
+            }
+            // 旧形式の互換性
+            switch(genreOrType) {
+                case 'ride':
+                    return '🎢';
+                case 'theater':
+                    return '🏛️';
+                default:
+                    return '🎡';
+            }
+        }
+
+        // アトラクション名からID部分を削除
+        function cleanAttractionName(name) {
+            return name.replace(/\s*\(ID:\s*\d+\)/g, '').trim();
+        }
+
+        // アトラクション名の多言語対応マッピング
+        const attractionNames = {
+            'オムニバス': { en: 'Omnibus', zh: '双层巴士', ko: '옴니버스' },
+            'カリブの海賊': { en: 'Pirates of the Caribbean', zh: '加勒比海盗', ko: '카리브의 해적' },
+            'ジャングルクルーズ：ワイルドライフ・エクスペディション': { en: 'Jungle Cruise: Wildlife Expeditions', zh: '丛林巡航：野生动物探险', ko: '정글 크루즈: 와일드라이프 익스페디션' },
+            'ウエスタンリバー鉄道': { en: 'Western River Railroad', zh: '西部沿河铁路', ko: '웨스턴 리버 철도' },
+            'スイスファミリー・ツリーハウス': { en: 'Swiss Family Treehouse', zh: '瑞士家庭树屋', ko: '스위스 패밀리 트리하우스' },
+            '魅惑のチキルーム': { en: 'Enchanted Tiki Room', zh: '提基神殿', ko: '요정 티키 룸' },
+            'ウエスタンランド・シューティングギャラリー': { en: 'Westernland Shooting Gallery', zh: '西部乐园射击馆', ko: '웨스턴랜드 슈팅 갤러리' },
+            'カントリーベア・シアター': { en: 'Country Bear Theater', zh: '乡村顽熊剧场', ko: '컨트리 베어 시어터' },
+            '蒸気船マークトウェイン号': { en: 'Mark Twain Riverboat', zh: '马克·吐温号蒸汽船', ko: '증기선 마크 트웨인 호' },
+            'ビッグサンダーマウンテン': { en: 'Big Thunder Mountain', zh: '巨雷山', ko: '빅 썬더 마운틴' },
+            'トムソーヤ島いかだ': { en: 'Tom Sawyer Island Rafts', zh: '汤姆·索亚岛木筏', ko: '톰 소여 섬 뗏목' },
+            'スプラッシュマウンテン': { en: 'Splash Mountain', zh: '飞溅山', ko: '스플래시 마운틴' },
+            'ビーバーブラザーズのカヌー探険': { en: 'Beaver Brothers Explorer Canoes', zh: '海狸兄弟独木舟历险', ko: '비버 브라더스 카누 탐험' },
+            'ピーターパン空の旅': { en: "Peter Pan's Flight", zh: '小飞侠天空之旅', ko: '피터팬의 하늘 여행' },
+            '白雪姫と七人のこびと': { en: 'Snow White\'s Adventures', zh: '白雪公主和七个小矮人', ko: '백설공주와 일곱 난쟁이' },
+            'シンデレラのフェアリーテイル・ホール': { en: 'Cinderella\'s Fairy Tale Hall', zh: '仙履奇缘童话大厅', ko: '신데렐라의 페어리테일 홀' },
+            'ミッキーのフィルハーマジック': { en: 'Mickey\'s PhilharMagic', zh: '米奇魔法音乐世界', ko: '미키의 필하모닉' },
+            'ピノキオの冒険旅行': { en: 'Pinocchio\'s Daring Journey', zh: '皮诺曹的勇敢之旅', ko: '피노키오의 모험 여행' },
+            '空飛ぶダンボ': { en: 'Dumbo the Flying Elephant', zh: '小飞象', ko: '날아다니는 덤보' },
+            'キャッスルカルーセル': { en: 'Castle Carrousel', zh: '城堡旋转木马', ko: '캐슬 회전목마' },
+            'ホーンテッドマンション': { en: 'Haunted Mansion', zh: '幽灵公馆', ko: '유령의 저택' },
+            'イッツ・ア・スモールワールド': { en: 'It\'s a Small World', zh: '小小世界', ko: '작은 세상' },
+            'プーさんのハニーハント': { en: 'Pooh\'s Hunny Hunt', zh: '小熊维尼猎蜜记', ko: '곰돌이 푸의 허니 헌트' },
+            'ロジャーラビットのカートゥーンスピン': { en: 'Roger Rabbit\'s Car Toon Spin', zh: '罗杰兔卡通旋转', ko: '로저 래빗의 카툰 스핀' },
+            'ミニーの家': { en: 'Minnie\'s House', zh: '米妮的家', ko: '미니의 집' },
+            'チップとデールのツリーハウス': { en: 'Chip \'n Dale\'s Treehouse', zh: '奇奇和蒂蒂的树屋', ko: '칩 앤 데일의 트리하우스' },
+            'ガジェットのゴーコースター': { en: 'Gadget\'s Go Coaster', zh: '高飞玩具城过山车', ko: '가젯의 고 코스터' },
+            'ドナルドのボート': { en: 'Donald\'s Boat', zh: '唐老鸭的船', ko: '도널드의 보트' },
+            'グーフィーのペイント＆プレイハウス': { en: 'Goofy\'s Paint \'n\' Play House', zh: '高飞油漆屋', ko: '구피의 페인트 앤 플레이 하우스' },
+            'スター・ツアーズ:ザ・アドベンチャーズ・コンティニュー': { en: 'Star Tours: The Adventures Continue', zh: '星际旅行：冒险继续', ko: '스타 투어즈: 더 어드벤처 컨티뉴' },
+            'モンスターズ・インク"ライド&ゴーシーク!"': { en: 'Monsters, Inc. Ride & Go Seek!', zh: '怪兽电力公司"迷藏巡游车"', ko: '몬스터 주식회사 라이드 앤 고 시크!' },
+            'ペニーアーケード': { en: 'Penny Arcade', zh: '便士街机', ko: '페니 아케이드' },
+            'トゥーンパーク': { en: 'Toontown Park', zh: '卡通城公园', ko: '툰타운 파크' },
+            'スティッチ・エンカウンター': { en: 'Stitch Encounter', zh: '史迪奇见面会', ko: '스티치 인카운터' },
+            'ベイマックスのハッピーライド': { en: 'Baymax\'s Happy Ride', zh: '大白快乐骑乘', ko: '베이맥스의 해피 라이드' },
+            '美女と野獣"魔法のものがたり"': { en: 'Beauty and the Beast', zh: '美女与野兽"魔法物语"', ko: '미녀와 야수 "마법의 이야기"' }
+        };
+
+        // アトラクション名を翻訳
+        function translateAttractionName(name, lang) {
+            try {
+                if (!name) return name;
+                if (lang === 'ja') return name;
+                const cleanName = cleanAttractionName(name);
+                if (attractionNames && attractionNames[cleanName] && attractionNames[cleanName][lang]) {
+                    return attractionNames[cleanName][lang];
+                }
+                return cleanName; // 翻訳が見つからない場合は元の名前を返す
+            } catch (error) {
+                console.error('翻訳エラー:', error, name, lang);
+                return name; // エラー時は元の名前を返す
+            }
+        }
+
+        // 営業時間の範囲（8:00-21:00）
+        const OPERATING_HOURS = {
+            min: '08:00',
+            max: '21:00'
+        };
+
+        // 開始時刻のバリデーション
+        function validateStartTime() {
+            const startTimeInput = document.getElementById('startTime');
+            const value = startTimeInput.value;
+            
+            if (value < OPERATING_HOURS.min) {
+                alert(`開始時刻は営業時間内（${OPERATING_HOURS.min}～${OPERATING_HOURS.max}）で選択してください。`);
+                startTimeInput.value = OPERATING_HOURS.min;
+            } else if (value > OPERATING_HOURS.max) {
+                alert(`開始時刻は営業時間内（${OPERATING_HOURS.min}～${OPERATING_HOURS.max}）で選択してください。`);
+                startTimeInput.value = OPERATING_HOURS.max;
+            }
+            
+            // 退園時刻より後にならないようにチェック
+            const exitTimeInput = document.getElementById('exitTimeInput');
+            if (exitOption === 'time' && exitTimeInput.value && value >= exitTimeInput.value) {
+                alert('開始時刻は退園時刻より前である必要があります。');
+                startTimeInput.value = OPERATING_HOURS.min;
+            }
+        }
+
+        // 退園時刻のバリデーション
+        function validateExitTime() {
+            const exitTimeInput = document.getElementById('exitTimeInput');
+            const value = exitTimeInput.value;
+            
+            if (value < OPERATING_HOURS.min) {
+                alert(`退園時刻は営業時間内（${OPERATING_HOURS.min}～${OPERATING_HOURS.max}）で選択してください。`);
+                exitTimeInput.value = OPERATING_HOURS.min;
+            } else if (value > OPERATING_HOURS.max) {
+                alert(`退園時刻は営業時間内（${OPERATING_HOURS.min}～${OPERATING_HOURS.max}）で選択してください。`);
+                exitTimeInput.value = OPERATING_HOURS.max;
+            }
+            
+            // 開始時刻より前にならないようにチェック
+            const startTimeInput = document.getElementById('startTime');
+            if (startTimeInput.value && value <= startTimeInput.value) {
+                alert('退園時刻は開始時刻より後である必要があります。');
+                exitTimeInput.value = OPERATING_HOURS.max;
+            }
+        }
+
+        // 退園オプション設定
+        function setExitOption(option, element) {
+            exitOption = option;
+            document.querySelectorAll('.exit-option-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (element) {
+                element.classList.add('active');
+            } else {
+                document.querySelector(`.exit-option-btn[onclick*="${option}"]`).classList.add('active');
+            }
+            
+            const exitTimeInput = document.getElementById('exitTimeInput');
+            if (option === 'time') {
+                exitTimeInput.classList.add('visible');
+                exitTimeInput.classList.remove('hidden');
+            } else {
+                exitTimeInput.classList.remove('visible');
+                exitTimeInput.classList.add('hidden');
+            }
+        }
+
+        // グローバルスコープに公開
+        window.validateStartTime = validateStartTime;
+        window.validateExitTime = validateExitTime;
+
+        // 地図初期化
+        function initMap() {
+            if (map) return; // 既に初期化済み
+            
+            const mapContainer = document.getElementById('map');
+            map = L.map(mapContainer, {
+                center: DISNEY_LAND_CENTER,
+                zoom: 15,
+                zoomControl: true
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        // 待ち時間データを読み込む
+        async function loadWaitingTimes() {
+            try {
+                // キャッシュを無効化して最新のデータを取得
+                const response = await fetch('waiting_times.json?' + new Date().getTime(), {
+                    cache: 'no-store'
+                });
+                const data = await response.json();
+                
+                if (data && Array.isArray(data)) {
+                    waitingTimesData = {};
+                    data.forEach(item => {
+                        if (item.attr_id) {
+                            waitingTimesData[item.attr_id] = {
+                                waiting_minutes: item.waiting_minutes || 0,
+                                updated_at: item.updated_at,
+                                time_series: item.time_series || []
+                            };
+                        }
+                    });
+                    const totalRecords = data.reduce((sum, item) => sum + (item.time_series?.length || 0), 0);
+                    
+                    // デバッグ: 読み込んだデータの日付範囲を確認
+                    let dateRange = { min: null, max: null };
+                    data.forEach(item => {
+                        if (item.time_series && item.time_series.length > 0) {
+                            item.time_series.forEach(ts => {
+                                if (ts.timestamp) {
+                                    const date = new Date(ts.timestamp);
+                                    if (!dateRange.min || date < dateRange.min) dateRange.min = date;
+                                    if (!dateRange.max || date > dateRange.max) dateRange.max = date;
+                                }
+                            });
+                        }
+                    });
+                    if (dateRange.min && dateRange.max) {
+                        console.log(`読み込んだデータの日付範囲: ${dateRange.min.toISOString().split('T')[0]} ～ ${dateRange.max.toISOString().split('T')[0]}`);
+                    }
+                    
+                    console.log(`${Object.keys(waitingTimesData).length}件のアトラクション、合計${totalRecords}件の待ち時間データを読み込みました`);
+                }
+            } catch (error) {
+                console.error('待ち時間データの読み込みエラー:', error);
+            }
+        }
+
+        // 指定時刻に最も近い待ち時間を取得（待ち時間とタイムスタンプを返す）
+        // 到着時刻に最も近い時間のデータを使用（過去・未来問わず）
+        // targetTimeMinutes: 1日の分数（0-1439、例：900 = 15時）
+        function getWaitingTimeAtTime(attrId, targetTimeMinutes) {
+            const data = waitingTimesData[attrId];
+            if (!data || !data.time_series || data.time_series.length === 0) {
+                return {
+                    waiting_minutes: data?.waiting_minutes || 0,
+                    timestamp: data?.updated_at || null
+                };
+            }
+
+            // 目標時刻（1日の分数、0-1439）
+            const targetTimeOnly = targetTimeMinutes % (24 * 60); // 念のため24時間で割った余りを取得
+
+            // すべてのデータから、到着時刻に最も近いものを選択
+            let closest = null;
+            let minDiff = Infinity;
+
+            data.time_series.forEach(item => {
+                if (!item.timestamp) return;
+                const itemDate = new Date(item.timestamp);
+                const itemHours = itemDate.getHours();
+                const itemMinutes = itemDate.getMinutes();
+                const itemSeconds = itemDate.getSeconds();
+                // 秒まで含めた分数に変換（より正確な比較のため）
+                const itemTimeOnly = itemHours * 60 + itemMinutes + itemSeconds / 60;
+                
+                // 時刻の差を計算（絶対値、分単位）
+                let diff = Math.abs(itemTimeOnly - targetTimeOnly);
+                
+                // 24時間を超える場合は反対側を考慮（例: 23:00と01:00は2時間の差）
+                if (diff > 12 * 60) {
+                    diff = 24 * 60 - diff;
+                }
+                
+                // 最も近い時刻のデータを選択
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closest = item;
+                }
+            });
+
+            // 最も近いデータが見つかった場合はそれを返す
+            if (closest) {
+                return {
+                    waiting_minutes: closest.waiting_minutes || 0,
+                    timestamp: closest.timestamp
+                };
+            }
+
+            // フォールバック: 最新の待ち時間を使用
+            return {
+                waiting_minutes: data.waiting_minutes || 0,
+                timestamp: data.updated_at || null
+            };
+        }
+
+        // タイムスタンプを「XX時点」形式に変換
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            try {
+                const date = new Date(timestamp);
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                const hours = date.getHours();
+                const minutes = date.getMinutes();
+                return `${month}/${day} ${hours}:${String(minutes).padStart(2, '0')}時点`;
+            } catch (e) {
+                return '';
+            }
+        }
+
+        // JSONファイルからアトラクションを取得
+        async function loadAttractionsFromDB() {
+            try {
+                // JSONファイルを読み込む（優先）
+                const response = await fetch('attractions.json');
+                const data = await response.json();
+                
+                if (data && Array.isArray(data)) {
+                    availableAttractions = data
+                        .filter(attr => attr.is_active && !attr.is_invalid && attr.entrance_lat && attr.entrance_lng)
+                        .map(attr => {
+                            const cleanName = cleanAttractionName(attr.name);
+                            const officialId = parseInt(attr.official_id) || null;
+                            
+                            // Firestoreからメタデータを取得（優先）、なければデフォルト判定
+                            const metadata = officialId ? attractionsMetadata[officialId] : null;
+                            let genreInfo;
+                            if (metadata && metadata.genre) {
+                                // Firestoreのジャンルを使用
+                                genreInfo = getGenreInfo(metadata.genre);
+                            } else {
+                                // デフォルト判定
+                                genreInfo = getAttractionGenre(cleanName);
+                            }
+                            
+                            // 所要時間: Firestore優先、なければデフォルト
+                            const durationMinutes = (metadata && metadata.duration_minutes) ? metadata.duration_minutes : genreInfo.duration;
+                            
+                            // 初期値として最新の待ち時間を設定（後で時刻に応じて更新される）
+                            const waitingData = officialId ? waitingTimesData[officialId] : null;
+                            const waitingMinutes = waitingData ? waitingData.waiting_minutes : 0;
+                            
+                            return {
+                                id: attr.id,
+                                name: cleanName,
+                                translatedName: translateAttractionName(cleanName, currentLanguage),
+                                originalName: attr.name,
+                                official_id: attr.official_id || '',
+                                lat: parseFloat(attr.entrance_lat),
+                                lng: parseFloat(attr.entrance_lng),
+                                exit_lat: attr.exit_lat ? parseFloat(attr.exit_lat) : null,
+                                exit_lng: attr.exit_lng ? parseFloat(attr.exit_lng) : null,
+                                area_name: attr.area_name || '',
+                                genre: genreInfo.genre,
+                                icon: genreInfo.icon,
+                                iconDescription: genreInfo.description || 'その他',
+                                duration_minutes: durationMinutes,
+                                is_seated: genreInfo.isSeated,
+                                waiting_minutes: waitingMinutes
+                            };
+                        });
+                    
+                    console.log(`${availableAttractions.length}件のアトラクションを取得しました`);
+                } else {
+                    console.warn('アトラクションデータの取得に失敗しました。');
+                }
+            } catch (error) {
+                console.error('アトラクション取得エラー:', error);
+                // フォールバック: 直接データを設定
+                availableAttractions = [
+                    { id: 4, name: 'オムニバス (ID: 151)', lat: 35.632993, lng: 139.879729, area_name: '', waiting_minutes: 0 },
+                    { id: 5, name: 'カリブの海賊 (ID: 152)', lat: 35.634270, lng: 139.880582, area_name: '', waiting_minutes: 0 },
+                    { id: 6, name: 'ジャングルクルーズ (ID: 153)', lat: 35.633780, lng: 139.882328, area_name: '', waiting_minutes: 0 },
+                ];
+                console.log('フォールバックデータを使用しました');
+            }
+            
+            // グリーティング施設を追加
+            addGreetingAttractions();
+            
+            renderAttractionCards();
+        }
+
+        // グリーティング施設を追加（ディズニーランドのみ）
+        function addGreetingAttractions() {
+            // グリーティング施設の定義（ランドのみ）
+            const greetingAttractionsLand = [
+                { official_id: '890', name: 'ミニーのスタイルスタジオ', lat: 35.630144, lng: 139.879011, area_name: 'トゥーンタウン' },
+                { official_id: '908', name: 'メインストリート・ハウス前（キャラクターグリーティング）', lat: 35.632993, lng: 139.879729, area_name: 'ワールドバザール' },
+                { official_id: '909', name: 'ミッキーの家とミート・ミッキー', lat: 35.630144, lng: 139.879011, area_name: 'トゥーンタウン' },
+                { official_id: '916', name: 'ウッドチャック・グリーティングトレイル（ドナルド）', lat: 35.630392, lng: 139.879013, area_name: 'トゥーンタウン' },
+                { official_id: '917', name: 'ウッドチャック・グリーティングトレイル（デイジー）', lat: 35.630392, lng: 139.879013, area_name: 'トゥーンタウン' }
+            ];
+            
+            // ディズニーランドのグリーティング施設のみを使用
+            const allGreetings = greetingAttractionsLand;
+            
+            allGreetings.forEach((greeting, index) => {
+                const officialId = parseInt(greeting.official_id) || null;
+                const cleanName = greeting.name;
+                
+                // 待ち時間データを取得
+                const waitingData = officialId ? waitingTimesData[officialId] : null;
+                const waitingMinutes = waitingData ? waitingData.waiting_minutes : 0;
+                
+                // グリーティング施設のジャンル情報（グリーティング専用）
+                const genreInfo = {
+                    genre: 'greeting',
+                    icon: '👋',
+                    duration: 10, // グリーティングは約10分と仮定
+                    isSeated: false,
+                    description: 'キャラクターグリーティング'
+                };
+                
+                // 既に存在するかチェック（official_idで）
+                const existingIndex = availableAttractions.findIndex(attr => attr.official_id === greeting.official_id);
+                
+                if (existingIndex === -1) {
+                    // 新しいIDを生成（既存の最大ID + 1）
+                    const maxId = availableAttractions.length > 0 ? 
+                        Math.max(...availableAttractions.map(a => a.id)) : 0;
+                    const newId = maxId + 1 + index;
+                    
+                    availableAttractions.push({
+                        id: newId,
+                        name: cleanName,
+                        translatedName: translateAttractionName(cleanName, currentLanguage),
+                        originalName: cleanName,
+                        official_id: greeting.official_id,
+                        lat: greeting.lat,
+                        lng: greeting.lng,
+                        exit_lat: greeting.lat,
+                        exit_lng: greeting.lng,
+                        area_name: greeting.area_name || '',
+                        genre: genreInfo.genre,
+                        icon: genreInfo.icon,
+                        iconDescription: genreInfo.description,
+                        duration_minutes: genreInfo.duration,
+                        is_seated: genreInfo.isSeated,
+                        waiting_minutes: waitingMinutes
+                    });
+                }
+            });
+            
+            console.log(`${allGreetings.length}件のグリーティング施設を追加しました`);
+        }
+
+        // 優先度設定
+        function setPriority(priority) {
+            currentPriority = priority;
+            document.querySelectorAll('.priority-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-priority="${priority}"]`).classList.add('active');
+        }
+
+        // アトラクションカードを描画
+        function renderAttractionCards() {
+            const grid = document.getElementById('attractionGrid');
+            grid.innerHTML = '';
+            
+            availableAttractions.forEach(attr => {
+                const card = document.createElement('div');
+                card.className = 'attraction-card';
+                card.dataset.id = attr.id;
+                
+                const isSelected = selectedAttractions.some(a => a.id === attr.id);
+                const selectedAttr = isSelected ? selectedAttractions.find(a => a.id === attr.id) : null;
+                const selectedIndex = isSelected ? selectedAttractions.findIndex(a => a.id === attr.id) : -1;
+                
+                if (isSelected) {
+                    card.classList.add('selected');
+                    // 優先度クラスを追加
+                    card.classList.add('priority-' + selectedAttr.priority);
+                }
+                
+                const priorityBadge = document.createElement('div');
+                priorityBadge.className = 'priority-badge priority-' + (isSelected ? 
+                    selectedAttr.priority : 'medium');
+                priorityBadge.textContent = isSelected ? 
+                    (selectedAttr.priority === 'high' ? '高' : 
+                     selectedAttr.priority === 'medium' ? '中' : '低') : '';
+                
+                // カードの順番番号を表示
+                if (isSelected && selectedIndex >= 0) {
+                    const orderNumber = document.createElement('div');
+                    orderNumber.className = 'card-order-number';
+                    orderNumber.textContent = selectedIndex + 1;
+                    card.appendChild(orderNumber);
+                }
+                
+                // ジャンルに応じてクラスを追加
+                if (attr.genre === 'theater') {
+                    card.classList.add('theater');
+                } else if (attr.genre === 'walking') {
+                    card.classList.add('walking');
+                } else if (attr.genre === 'coaster') {
+                    card.classList.add('coaster');
+                } else if (attr.genre === 'ride') {
+                    card.classList.add('ride');
+                } else if (attr.genre === 'greeting') {
+                    card.classList.add('greeting');
+                }
+                
+                const name = document.createElement('div');
+                name.className = 'attraction-card-name';
+                const icon = document.createElement('span');
+                icon.className = 'attraction-icon';
+                icon.textContent = attr.icon || '🎡';
+                name.appendChild(icon);
+                const nameText = document.createElement('span');
+                
+                // 文字数が21字以上の場合はクラスを追加
+                const displayName = attr.translatedName || attr.name;
+                if (displayName && displayName.length >= 21) {
+                    name.classList.add('long-text');
+                }
+                nameText.textContent = attr.translatedName || attr.name;
+                name.appendChild(nameText);
+                
+                card.appendChild(priorityBadge);
+                card.appendChild(name);
+                
+                card.addEventListener('click', () => {
+                    toggleAttraction(attr.id);
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // アトラクションの選択/解除
+        function toggleAttraction(id) {
+            const attraction = availableAttractions.find(a => a.id === id);
+            if (!attraction) return;
+            
+            const index = selectedAttractions.findIndex(a => a.id === id);
+            
+            if (index >= 0) {
+                // 既に選択されている場合は削除
+                selectedAttractions.splice(index, 1);
+            } else {
+                // 選択されていない場合は追加
+                selectedAttractions.push({
+                    ...attraction,
+                    priority: currentPriority
+                });
+            }
+            
+            renderAttractionCards();
+            renderMarkers();
+            updateAttractionList();
+        }
+
+        // マーカー描画
+        function renderMarkers() {
+            if (!map) return; // 地図が初期化されていない場合は何もしない
+            
+            // 既存のマーカーを削除
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // 選択されたアトラクションのマーカーを追加
+            selectedAttractions.forEach((attr, index) => {
+                const markerColor = attr.priority === 'high' ? '#FF69B4' : 
+                                   attr.priority === 'low' ? '#D3D3D3' : '#DDA0DD';
+                
+                const marker = L.circleMarker([attr.lat, attr.lng], {
+                    radius: 12,
+                    fillColor: markerColor,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(map);
+
+                const displayName = attr.translatedName || attr.name;
+                marker.bindPopup(`<b>${index + 1}. ${displayName}</b><br>${i18n[currentLanguage]['priority']}: ${getPriorityText(attr.priority)}`);
+                markers.push(marker);
+            });
+        }
+
+        // 優先度テキスト取得
+        function getPriorityText(priority) {
+            const texts = {
+                'high': i18n[currentLanguage]['priority-high'],
+                'medium': i18n[currentLanguage]['priority-medium'],
+                'low': i18n[currentLanguage]['priority-low']
+            };
+            return texts[priority] || i18n[currentLanguage]['priority-medium'];
+        }
+
+        // アトラクションリスト更新
+        function updateAttractionList() {
+            const attractionList = document.getElementById('attractionList');
+            attractionList.innerHTML = '';
+            
+            if (selectedAttractions.length === 0) {
+                attractionList.innerHTML = `<div style="text-align: center; color: #999; padding: 20px;">${i18n[currentLanguage]['select-attractions']}</div>`;
+                return;
+            }
+            
+            selectedAttractions.forEach((attr, index) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                const priorityColor = attr.priority === 'high' ? '#FF69B4' : 
+                                    attr.priority === 'low' ? '#D3D3D3' : '#DDA0DD';
+                item.style.borderLeftColor = priorityColor;
+                const icon = attr.icon || '🎡';
+                const waitingInfo = attr.waiting_minutes > 0 ? ` <small style="color: #FF69B4;">⏱️ ${attr.waiting_minutes}${i18n[currentLanguage]['minutes']}</small>` : '';
+                const durationInfo = attr.duration_minutes ? ` <small style="color: #666;">⏳ ${attr.duration_minutes}${i18n[currentLanguage]['minutes']}</small>` : '';
+                item.innerHTML = `
+                    <span class="list-item-name">${index + 1}. ${icon} ${attr.translatedName || attr.name}${waitingInfo}${durationInfo} <small style="color: ${priorityColor};">(${i18n[currentLanguage]['priority']}: ${getPriorityText(attr.priority)})</small></span>
+                    <button class="list-item-delete" onclick="deleteAttraction(${attr.id})">${i18n[currentLanguage]['delete']}</button>
+                `;
+                attractionList.appendChild(item);
+            });
+        }
+
+        // アトラクション削除
+        function deleteAttraction(id) {
+            selectedAttractions = selectedAttractions.filter(a => a.id !== id);
+            renderAttractionCards();
+            renderMarkers();
+            updateAttractionList();
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
+            }
+            document.getElementById('resultBox').classList.add('hidden');
+        }
+
+        // 距離計算（Haversine formula）
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371000; // 地球の半径（メートル）
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        // 最近傍法TSP（距離最短）
+        function nearestNeighborTSP(points) {
+            if (points.length === 0) return [];
+            
+            const route = [];
+            const visited = new Set();
+            let current = points[0];
+            route.push(current);
+            visited.add(current.id);
+
+            while (visited.size < points.length) {
+                let nearest = null;
+                let minDist = Infinity;
+
+                for (const point of points) {
+                    if (visited.has(point.id)) continue;
+                    const dist = calculateDistance(
+                        current.lat, current.lng,
+                        point.lat, point.lng
+                    );
+                    if (dist < minDist) {
+                        minDist = dist;
+                        nearest = point;
+                    }
+                }
+
+                if (nearest) {
+                    route.push(nearest);
+                    visited.add(nearest.id);
+                    current = nearest;
+                }
+            }
+
+            return route;
+        }
+
+        // 時間最短TSP（移動時間 + 待ち時間 + 所要時間を考慮）
+        function shortestTimeTSP(points, startTimeMinutes, walkingSpeedMetersPerMinute = 80) {
+            if (points.length === 0) return [];
+            
+            const route = [];
+            const visited = new Set();
+            let current = points[0];
+            route.push(current);
+            visited.add(current.id);
+            let currentTimeMinutes = startTimeMinutes;
+
+            while (visited.size < points.length) {
+                let bestNext = null;
+                let minTotalTime = Infinity;
+
+                for (const point of points) {
+                    if (visited.has(point.id)) continue;
+                    
+                    // 移動時間を計算
+                    const distance = calculateDistance(
+                        current.lat, current.lng,
+                        point.lat, point.lng
+                    );
+                    const travelMinutes = Math.ceil(distance / walkingSpeedMetersPerMinute);
+                    
+                    // 到着時刻
+                    const arrivalTimeMinutes = currentTimeMinutes + travelMinutes;
+                    
+                    // 待ち時間を取得
+                    const officialId = parseInt(point.official_id) || null;
+                    const waitingData = officialId ? getWaitingTimeAtTime(officialId, arrivalTimeMinutes) : { waiting_minutes: point.waiting_minutes || 0, timestamp: null };
+                    const waitingMinutes = waitingData.waiting_minutes;
+                    
+                    // 所要時間
+                    const durationMinutes = point.duration_minutes || 5;
+                    
+                    // 総時間（移動時間 + 待ち時間 + 所要時間）
+                    const totalTime = travelMinutes + waitingMinutes + durationMinutes;
+                    
+                    if (totalTime < minTotalTime) {
+                        minTotalTime = totalTime;
+                        bestNext = point;
+                    }
+                }
+
+                if (bestNext) {
+                    route.push(bestNext);
+                    visited.add(bestNext.id);
+                    
+                    // 次のアトラクションへの移動時間を計算
+                    const distance = calculateDistance(
+                        current.lat, current.lng,
+                        bestNext.lat, bestNext.lng
+                    );
+                    const travelMinutes = Math.ceil(distance / walkingSpeedMetersPerMinute);
+                    
+                    // 到着時刻
+                    const arrivalTimeMinutes = currentTimeMinutes + travelMinutes;
+                    
+                    // 待ち時間を取得
+                    const officialId = parseInt(bestNext.official_id) || null;
+                    const waitingData = officialId ? getWaitingTimeAtTime(officialId, arrivalTimeMinutes) : { waiting_minutes: bestNext.waiting_minutes || 0, timestamp: null };
+                    const waitingMinutes = waitingData.waiting_minutes;
+                    
+                    // 所要時間
+                    const durationMinutes = bestNext.duration_minutes || 5;
+                    
+                    // 出発時刻を更新
+                    currentTimeMinutes = arrivalTimeMinutes + waitingMinutes + durationMinutes;
+                    current = bestNext;
+                }
+            }
+
+            return route;
+        }
+
+        // ルート最適化方法を取得
+        function getRouteOptimizationMethod() {
+            return localStorage.getItem('routeOptimizationMethod') || 'distance';
+        }
+
+        // ルート最適化方法を更新
+        function updateRouteOptimization() {
+            const select = document.getElementById('routeOptimizationSelect');
+            const method = select.value;
+            localStorage.setItem('routeOptimizationMethod', method);
+        }
+
+        // ルートを決める
+        function optimizeRoute() {
+            if (selectedAttractions.length < 2) {
+                alert('最低2つ以上のアトラクションを選択してください');
+                return;
+            }
+
+            // 地図を表示
+            const mapContainer = document.querySelector('.park-map');
+            const mainContent = document.querySelector('.main-content');
+            if (!mapContainer.classList.contains('visible')) {
+                mapContainer.classList.add('visible');
+                mainContent.classList.remove('no-map');
+                initMap();
+                // 地図が表示されたら少し待ってからマーカーを描画
+                setTimeout(() => {
+                    renderMarkers();
+                }, 100);
+            }
+
+            const optimizationMethod = getRouteOptimizationMethod();
+            let route;
+
+            if (optimizationMethod === 'selection-order') {
+                // 選択順で回る
+                route = [...selectedAttractions];
+            } else if (optimizationMethod === 'time') {
+                // 時間最短で最適化
+                // 優先度順にソート（高→中→低）
+                const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
+                const sortedAttractions = [...selectedAttractions].sort((a, b) => {
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                });
+                const startTimeStr = document.getElementById('startTime').value;
+                const startTimeMinutes = timeToMinutes(startTimeStr);
+                const walkingSpeedMetersPerMinute = 80;
+                route = shortestTimeTSP(sortedAttractions, startTimeMinutes, walkingSpeedMetersPerMinute);
+            } else {
+                // 距離最短で最適化（デフォルト）
+                // 優先度順にソート（高→中→低）
+                const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
+                const sortedAttractions = [...selectedAttractions].sort((a, b) => {
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                });
+                route = nearestNeighborTSP(sortedAttractions);
+            }
+
+            drawRoute(route);
+            displayResult(route);
+        }
+
+        // ルート描画
+        function drawRoute(route) {
+            // 既存のルートを削除
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+            }
+
+            if (route.length < 2) return;
+
+            const routePoints = route.map(attr => [attr.lat, attr.lng]);
+            routeLayer = L.polyline(routePoints, {
+                color: '#DDA0DD',
+                weight: 4,
+                opacity: 0.8,
+                smoothFactor: 1
+            }).addTo(map);
+
+            // マップをルート全体が表示されるように調整
+            const group = new L.featureGroup(route.map(attr => 
+                L.marker([attr.lat, attr.lng])
+            ));
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+
+        // 時間を分に変換
+        function timeToMinutes(timeStr) {
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        // 分を時間文字列に変換
+        function minutesToTime(totalMinutes) {
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        }
+
+        // カスタム確認ダイアログを表示（Promiseベース、3択対応）
+        function showCustomDialog(title, message, confirmText, recreateText, cancelText) {
+            return new Promise((resolve) => {
+                const dialog = document.getElementById('customDialog');
+                const titleEl = document.getElementById('customDialogTitle');
+                const messageEl = document.getElementById('customDialogMessage');
+                const confirmBtn = document.getElementById('customDialogConfirmBtn');
+                const recreateBtn = document.getElementById('customDialogRecreateBtn');
+                const cancelBtn = document.getElementById('customDialogCancelBtn');
+                
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                confirmBtn.textContent = confirmText;
+                recreateBtn.textContent = recreateText;
+                cancelBtn.textContent = cancelText;
+                
+                // イベントリスナーを一度だけ設定
+                const handleConfirm = () => {
+                    dialog.classList.remove('show');
+                    resolve('display-as-is');
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    recreateBtn.removeEventListener('click', handleRecreate);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                };
+                
+                const handleRecreate = () => {
+                    dialog.classList.remove('show');
+                    resolve('recreate');
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    recreateBtn.removeEventListener('click', handleRecreate);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                };
+                
+                const handleCancel = () => {
+                    dialog.classList.remove('show');
+                    resolve('cancel');
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    recreateBtn.removeEventListener('click', handleRecreate);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                };
+                
+                confirmBtn.addEventListener('click', handleConfirm);
+                recreateBtn.addEventListener('click', handleRecreate);
+                cancelBtn.addEventListener('click', handleCancel);
+                
+                // ダイアログ外をクリックしても閉じないようにする（誤操作防止）
+                dialog.addEventListener('click', (e) => {
+                    if (e.target === dialog) {
+                        // ダイアログ外をクリックしても何もしない
+                    }
+                });
+                
+                dialog.classList.add('show');
+            });
+        }
+
+        // 結果表示
+        function displayResult(route) {
+            let totalDistance = 0;
+            for (let i = 0; i < route.length - 1; i++) {
+                totalDistance += calculateDistance(
+                    route[i].lat, route[i].lng,
+                    route[i + 1].lat, route[i + 1].lng
+                );
+            }
+
+            document.getElementById('totalDistance').textContent = totalDistance.toFixed(0);
+            document.getElementById('routeLength').textContent = route.length;
+
+            const resultList = document.getElementById('resultList');
+            resultList.innerHTML = '';
+
+            const startTimeStr = document.getElementById('startTime').value;
+            const exitTimeStr = exitOption === 'time' ? document.getElementById('exitTimeInput').value : '21:00';
+            let currentTimeMinutes = timeToMinutes(startTimeStr);
+            const exitTimeMinutes = timeToMinutes(exitTimeStr);
+            
+            // 移動時間の計算（分速80mと仮定）
+            // TODO: 将来的には混雑度を考慮して歩く速さを変更できるようにする
+            // 例: 混雑度が高い時間帯は分速60m、空いている時間帯は分速100mなど
+            const walkingSpeedMetersPerMinute = 80;
+            
+            // 閉園時刻を超えるアトラクションを記録
+            const attractionsExceedingClosingTime = [];
+            let tempCurrentTimeMinutes = currentTimeMinutes;
+            
+            route.forEach((point, index) => {
+                // 移動時間の計算
+                let travelMinutes = 0;
+                if (index > 0) {
+                    const prevPoint = route[index - 1];
+                    const distance = calculateDistance(
+                        prevPoint.lat, prevPoint.lng,
+                        point.lat, point.lng
+                    );
+                    travelMinutes = Math.ceil(distance / walkingSpeedMetersPerMinute);
+                }
+                
+                // 到着時刻
+                const arrivalTimeMinutes = tempCurrentTimeMinutes;
+                
+                // 待ち時間（到着時刻に最も近いデータを取得）
+                const officialId = parseInt(point.official_id) || null;
+                const waitingData = officialId ? getWaitingTimeAtTime(officialId, arrivalTimeMinutes) : { waiting_minutes: point.waiting_minutes || 0, timestamp: null };
+                const waitingMinutes = waitingData.waiting_minutes;
+                
+                // アトラクション所要時間
+                const durationMinutes = point.duration_minutes || 5;
+                
+                // 出発時刻（到着 + 待ち時間 + 所要時間）
+                const departureTimeMinutes = arrivalTimeMinutes + waitingMinutes + durationMinutes;
+                
+                // 閉園時刻を超えるかチェック（到着時刻で判定）
+                if (arrivalTimeMinutes > exitTimeMinutes) {
+                    attractionsExceedingClosingTime.push({
+                        index: index,
+                        name: point.translatedName || point.name,
+                        arrivalTime: minutesToTime(arrivalTimeMinutes),
+                        priority: point.priority
+                    });
+                }
+                
+                // 次のアトラクションへの移動時間を加算
+                tempCurrentTimeMinutes = departureTimeMinutes + travelMinutes;
+            });
+            
+            // 閉園時刻を超えるアトラクションがある場合、ユーザーに確認
+            if (attractionsExceedingClosingTime.length > 0) {
+                const lang = i18n[currentLanguage] || i18n['ja'];
+                const exceedingNames = attractionsExceedingClosingTime.map(a => 
+                    `・${a.name} (${lang['arrival-scheduled']}: ${a.arrivalTime})`
+                ).join('\n');
+                
+                // 退園時刻が時刻指定の場合はメッセージを変更
+                let message;
+                if (exitOption === 'time') {
+                    message = `${lang['exit-time-exceeded'].replace('{time}', exitTimeStr)}\n\n${exceedingNames}`;
+                } else {
+                    message = `${lang['closing-time-exceeded'].replace('{time}', exitTimeStr)}\n\n${exceedingNames}`;
+                }
+                
+                // カスタムダイアログで確認（3択）
+                showCustomDialog(
+                    lang['closing-time-exceeded-warning'],
+                    message,
+                    lang['display-as-is'] || 'そのまま表示',
+                    lang['recreate-route-low-priority'] || '低優先度のものを削除し再作成',
+                    lang['cancel'] || 'キャンセル'
+                ).then((choice) => {
+                    if (choice === 'display-as-is') {
+                        // ユーザーが「そのまま表示」を選択した場合
+                        renderRouteList(route, currentTimeMinutes, exitTimeMinutes, walkingSpeedMetersPerMinute);
+                    } else if (choice === 'recreate') {
+                        // ユーザーが「低優先度のものを削除し再作成」を選択した場合
+                        const filteredAttractions = selectedAttractions.filter(attr => {
+                            // 閉園時刻を超えるアトラクションのうち、低優先度のものを除外
+                            const exceedingAttr = attractionsExceedingClosingTime.find(a => 
+                                (attr.translatedName || attr.name) === a.name
+                            );
+                            if (exceedingAttr && exceedingAttr.priority === 'low') {
+                                return false; // 低優先度のアトラクションを除外
+                            }
+                            return true;
+                        });
+                        
+                        if (filteredAttractions.length < 2) {
+                            alert(lang['insufficient-attractions']);
+                            return;
+                        }
+                        
+                        // 優先度順にソート（高→中→低）
+                        const priorityOrder = { 'high': 0, 'medium': 1, 'low': 2 };
+                        const sortedAttractions = [...filteredAttractions].sort((a, b) => {
+                            return priorityOrder[a.priority] - priorityOrder[b.priority];
+                        });
+                        
+                        const newRoute = nearestNeighborTSP(sortedAttractions);
+                        selectedAttractions = filteredAttractions; // 選択リストも更新
+                        renderAttractionCards();
+                        renderMarkers();
+                        updateAttractionList();
+                        drawRoute(newRoute);
+                        // 再作成後はダイアログを表示せずに直接ルートを表示
+                        renderRouteList(newRoute, currentTimeMinutes, exitTimeMinutes, walkingSpeedMetersPerMinute);
+                    } else {
+                        // ユーザーが「キャンセル」を選択した場合、何もしない（ルートを表示しない）
+                        return;
+                    }
+                });
+                return; // 非同期処理のため、ここでreturn
+            }
+            
+            // 通常の表示処理
+            renderRouteList(route, currentTimeMinutes, exitTimeMinutes, walkingSpeedMetersPerMinute);
+        }
+        
+        // ルートリストを描画する関数（休憩機能付き）
+        function renderRouteList(route, startTimeMinutes, exitTimeMinutes, walkingSpeedMetersPerMinute) {
+            // ルートデータを保存
+            currentRouteData = route.map((point, index) => ({
+                ...point,
+                originalIndex: index,
+                isBreak: false
+            }));
+            currentRouteStartTime = startTimeMinutes;
+            currentRouteExitTime = exitTimeMinutes;
+            currentWalkingSpeed = walkingSpeedMetersPerMinute;
+            
+            const resultList = document.getElementById('resultList');
+            resultList.innerHTML = '';
+            
+            let currentTimeMinutes = startTimeMinutes;
+            
+            currentRouteData.forEach((point, index) => {
+                const li = document.createElement('li');
+                li.dataset.index = index;
+                li.dataset.isBreak = point.isBreak ? 'true' : 'false';
+                
+                // クリックで休憩を追加できるように（アイテムの下に追加）
+                li.addEventListener('dblclick', function(e) {
+                    if (!point.isBreak) {
+                        addBreak(index + 1);
+                    }
+                });
+                
+                if (point.isBreak) {
+                    // 休憩アイテム
+                    li.classList.add('break-item');
+                    const breakDuration = point.breakDuration || 30;
+                    const lang = i18n[currentLanguage] || i18n['ja'];
+                    li.innerHTML = `
+                        <span class="route-index">☕</span>
+                        <div style="flex: 1;">
+                            <div><strong>☕ ${lang['break'] || '休憩'}</strong></div>
+                            <div class="break-controls">
+                                <label style="font-size: 0.85rem; color: #666;">${lang['duration'] || '所要'}:</label>
+                                <input type="number" class="break-duration-input" value="${breakDuration}" min="5" max="180" step="5" 
+                                       onchange="updateBreakDuration(${index}, this.value)">
+                                <span style="font-size: 0.85rem; color: #666;">${lang['minutes'] || '分'}</span>
+                                <button class="break-remove-btn" onclick="removeBreak(${index})">${lang['delete'] || '削除'}</button>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">
+                                ${lang['arrival'] || '到着'}: ${minutesToTime(currentTimeMinutes)} | ${lang['departure'] || '出発'}: ${minutesToTime(currentTimeMinutes + breakDuration)}
+                            </div>
+                        </div>
+                    `;
+                    currentTimeMinutes += breakDuration;
+                } else {
+                    // 通常のアトラクション
+                    const priorityColor = point.priority === 'high' ? '#FF69B4' : 
+                                        point.priority === 'low' ? '#D3D3D3' : '#DDA0DD';
+                    const icon = point.icon || '🎡';
+                    
+                    // 移動時間の計算
+                    let travelMinutes = 0;
+                    if (index > 0) {
+                        const prevPoint = currentRouteData[index - 1];
+                        if (!prevPoint.isBreak && prevPoint.lat && prevPoint.lng) {
+                            const distance = calculateDistance(
+                                prevPoint.lat, prevPoint.lng,
+                                point.lat, point.lng
+                            );
+                            travelMinutes = Math.ceil(distance / walkingSpeedMetersPerMinute);
+                        }
+                    }
+                    
+                    // 到着時刻
+                    const arrivalTime = minutesToTime(currentTimeMinutes);
+                    
+                    // 待ち時間（到着時刻に最も近いデータを取得）
+                    const officialId = parseInt(point.official_id) || null;
+                    const waitingData = officialId ? getWaitingTimeAtTime(officialId, currentTimeMinutes) : { waiting_minutes: point.waiting_minutes || 0, timestamp: null };
+                    const waitingMinutes = waitingData.waiting_minutes;
+                    const waitingTimestamp = waitingData.timestamp;
+                    
+                    // アトラクション所要時間
+                    const durationMinutes = point.duration_minutes || 5;
+                    
+                    // 出発時刻（到着 + 待ち時間 + 所要時間）
+                    const departureTimeMinutes = currentTimeMinutes + waitingMinutes + durationMinutes;
+                    const departureTime = minutesToTime(departureTimeMinutes);
+                    
+                    // 閉園時刻を超える場合は警告スタイルを適用（到着時刻で判定）
+                    const isExceedingClosingTime = currentTimeMinutes > exitTimeMinutes;
+                    const warningStyle = isExceedingClosingTime ? 'background-color: #ffebee; border-left-color: #f44336;' : '';
+                    
+                    // 次のアトラクションへの移動時間を加算
+                    currentTimeMinutes = departureTimeMinutes + travelMinutes;
+                    
+                    // アトラクションの順番を計算（休憩を除く）
+                    const attractionIndex = currentRouteData.slice(0, index).filter(item => !item.isBreak).length + 1;
+                    
+                    const lang = i18n[currentLanguage] || i18n['ja'];
+                    li.innerHTML = `
+                        <span class="route-index">${attractionIndex}</span>
+                        <div style="flex: 1; ${warningStyle}">
+                            <div><strong>${icon} ${point.translatedName || point.name}</strong> <small style="color: ${priorityColor};">[${lang['priority']}: ${getPriorityText(point.priority)}]</small>${isExceedingClosingTime ? ` <span style="color: #f44336; font-weight: bold;">${lang['closing-time-exceeded-warning']}</span>` : ''}</div>
+                            <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">
+                                ${travelMinutes > 0 ? `${lang['travel']}: ${travelMinutes}${lang['minutes']} → ` : ''}${lang['arrival']}: ${arrivalTime} | ${lang['waiting']}: ${waitingMinutes}${lang['minutes']}${waitingTimestamp ? ` (${formatTimestamp(waitingTimestamp)} ${lang['at-time']})` : ''} | ${lang['duration']}: ${durationMinutes}${lang['minutes']} | ${lang['departure']}: ${departureTime}
+                            </div>
+                        </div>
+                    `;
+                    
+                    // jQuery UIのSortableが有効な場合は、HTML5のドラッグ&ドロップは無効化
+                    // （jQuery UIのSortableが自動的に処理するため）
+                }
+                
+                resultList.appendChild(li);
+            });
+
+            // jQuery UIのSortableを初期化
+            if (typeof jQuery !== 'undefined' && typeof jQuery.ui !== 'undefined') {
+                // 既存のSortableを破棄（再初期化のため）
+                if (jQuery('#resultList').hasClass('ui-sortable')) {
+                    jQuery('#resultList').sortable('destroy');
+                }
+                
+                jQuery('#resultList').sortable({
+                    items: 'li',
+                    cursor: 'move',
+                    opacity: 0.8,
+                    tolerance: 'pointer',
+                    placeholder: 'sortable-placeholder',
+                    start: function(e, ui) {
+                        ui.placeholder.height(ui.item.height());
+                        ui.placeholder.css('background', 'rgba(221, 160, 221, 0.3)');
+                        ui.placeholder.css('border', '2px dashed #DDA0DD');
+                        ui.placeholder.css('border-radius', '10px');
+                    },
+                    update: function(e, ui) {
+                        // 並び替え後にルートを再計算
+                        const newOrder = [];
+                        jQuery('#resultList li').each(function() {
+                            const itemIndex = parseInt(jQuery(this).data('index'));
+                            if (itemIndex !== undefined && currentRouteData && currentRouteData[itemIndex] !== undefined) {
+                                newOrder.push(itemIndex);
+                            }
+                        });
+                        
+                        // 新しい順序でルートデータを再構築
+                        if (newOrder.length === currentRouteData.length) {
+                            const reorderedData = newOrder.map(idx => currentRouteData[idx]);
+                            currentRouteData = reorderedData;
+                            // ルートを再計算（Sortableの再初期化を避けるため、直接renderRouteListを呼ばずにrecalculateRouteを呼ぶ）
+                            recalculateRoute();
+                        }
+                    }
+                });
+            }
+
+            document.getElementById('resultBox').classList.remove('hidden');
+            updateResultTitleDisplay();
+        }
+
+        // ドラッグ開始
+        let draggedElement = null;
+        function handleDragStart(e) {
+            draggedElement = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+            
+            // すべてのドロップゾーンを表示
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.add('show');
+            });
+        }
+
+        // ドラッグ終了
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('drag-over');
+                zone.classList.remove('show');
+            });
+            draggedElement = null;
+        }
+
+        // ドラッグオーバー
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            this.classList.add('drag-over');
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        // ドラッグリーブ
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        // ドロップゾーンへのドロップ
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (!draggedElement) return false;
+            
+            const dropIndex = parseInt(this.dataset.index);
+            const dragIndex = parseInt(draggedElement.dataset.index);
+            
+            // ドロップゾーンへのドロップは常に休憩を追加
+            addBreak(dropIndex);
+            
+            this.classList.remove('drag-over');
+            this.classList.remove('show');
+            return false;
+        }
+
+        // ルートアイテムへのドラッグオーバー
+        function handleItemDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            if (draggedElement && draggedElement !== this) {
+                this.style.borderTop = '3px solid #DDA0DD';
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        // ルートアイテムへのドロップ
+        function handleItemDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            if (!draggedElement || draggedElement === this) return false;
+            
+            const dropIndex = parseInt(this.dataset.index);
+            const dragIndex = parseInt(draggedElement.dataset.index);
+            
+            // ルートアイテムを移動
+            moveRouteItem(dragIndex, dropIndex);
+            
+            this.style.borderTop = '';
+            return false;
+        }
+
+        // ルートアイテムからのドラッグリーブ
+        function handleItemDragLeave(e) {
+            this.style.borderTop = '';
+        }
+
+        // 休憩を追加
+        function addBreak(index) {
+            if (!currentRouteData) return;
+            
+            const lang = i18n[currentLanguage] || i18n['ja'];
+            const breakItem = {
+                isBreak: true,
+                breakDuration: 30,
+                name: lang['break'] || '休憩',
+                translatedName: lang['break'] || '休憩'
+            };
+            
+            currentRouteData.splice(index, 0, breakItem);
+            recalculateRoute();
+        }
+
+        // 最後に休憩を追加
+        function addBreakAtEnd() {
+            if (!currentRouteData) return;
+            addBreak(currentRouteData.length);
+        }
+
+        // グローバルスコープに公開
+        window.addBreakAtEnd = addBreakAtEnd;
+
+        // 休憩を削除
+        function removeBreak(index) {
+            if (!currentRouteData || !currentRouteData[index] || !currentRouteData[index].isBreak) return;
+            
+            currentRouteData.splice(index, 1);
+            recalculateRoute();
+        }
+
+        // 休憩時間を更新
+        function updateBreakDuration(index, duration) {
+            if (!currentRouteData || !currentRouteData[index] || !currentRouteData[index].isBreak) return;
+            
+            currentRouteData[index].breakDuration = parseInt(duration) || 30;
+            recalculateRoute();
+        }
+
+        // ルートアイテムを移動
+        function moveRouteItem(fromIndex, toIndex) {
+            if (!currentRouteData || fromIndex === toIndex) return;
+            
+            const item = currentRouteData.splice(fromIndex, 1)[0];
+            currentRouteData.splice(toIndex, 0, item);
+            recalculateRoute();
+        }
+
+        // ルートを再計算
+        function recalculateRoute() {
+            if (!currentRouteData || currentRouteData.length === 0) return;
+            
+            // 休憩以外のアトラクションのみを抽出
+            const attractionsOnly = currentRouteData.filter(item => !item.isBreak);
+            
+            renderRouteList(currentRouteData, currentRouteStartTime, currentRouteExitTime, currentWalkingSpeed);
+            
+            // 地図も更新
+            if (attractionsOnly.length > 0) {
+                drawRoute(attractionsOnly);
+            }
+        }
+
+        // グローバルスコープに公開
+        window.addBreak = addBreak;
+        window.removeBreak = removeBreak;
+        window.updateBreakDuration = updateBreakDuration;
+
+        // 設定パネルを開く
+        function openSettings() {
+            const panel = document.getElementById('settingsPanel');
+            if (!panel) {
+                console.error('設定パネルが見つかりません');
+                return;
+            }
+            panel.classList.remove('hidden');
+            // 現在の設定を読み込む
+            const currentTitle = localStorage.getItem('routeResultTitle') || 'まわるじゅんばん';
+            const select = document.getElementById('resultTitleSelect');
+            if (select) {
+                select.value = currentTitle;
+            }
+            // 背景スタイルの設定を読み込む
+            const currentBackground = localStorage.getItem('backgroundStyle') || 'checkerboard';
+            const backgroundSelect = document.getElementById('backgroundStyleSelect');
+            if (backgroundSelect) {
+                backgroundSelect.value = currentBackground;
+            }
+            // ルート最適化方法の設定を読み込む
+            const currentOptimization = getRouteOptimizationMethod();
+            const optimizationSelect = document.getElementById('routeOptimizationSelect');
+            if (optimizationSelect) {
+                optimizationSelect.value = currentOptimization;
+            }
+        }
+
+        // 設定パネルを閉じる
+        function closeSettings() {
+            const panel = document.getElementById('settingsPanel');
+            if (panel) {
+                panel.classList.add('hidden');
+            }
+        }
+
+        // グローバルスコープに公開（onclick属性から呼び出せるように）
+        window.openSettings = openSettings;
+        window.closeSettings = closeSettings;
+
+        // 背景スタイルを更新
+        function updateBackgroundStyle() {
+            const select = document.getElementById('backgroundStyleSelect');
+            const style = select.value;
+            localStorage.setItem('backgroundStyle', style);
+            
+            // bodyのクラスを更新
+            document.body.classList.remove('checkerboard', 'gradient');
+            document.body.classList.add(style);
+        }
+
+        // 結果タイトルを更新
+        function updateResultTitle() {
+            const select = document.getElementById('resultTitleSelect');
+            const title = select.value;
+            localStorage.setItem('routeResultTitle', title);
+            updateResultTitleDisplay();
+        }
+
+        // 結果タイトルの表示を更新
+        function updateResultTitleDisplay() {
+            const titleElement = document.getElementById('resultTitle');
+            if (titleElement) {
+                const savedTitle = localStorage.getItem('routeResultTitle') || 'まわるじゅんばん';
+                titleElement.textContent = `📊 ${savedTitle}`;
+            }
+        }
+
+        // アイコン注釈の表示/非表示を切り替え
+        function toggleIconAnnotations() {
+            const list = document.getElementById('iconAnnotationList');
+            const link = document.getElementById('iconAnnotationLink');
+            
+            if (list.classList.contains('show')) {
+                list.classList.remove('show');
+                link.textContent = i18n[currentLanguage]['view-annotations'];
+            } else {
+                // 全てのアイコン注釈を生成
+                const genreMap = {
+                    'theater': { icon: '🏛️', description: '座れるアトラクション（屋内シアター型）' },
+                    'ride': { icon: '🎠', description: 'ライド' },
+                    'coaster': { icon: '🎢', description: 'コースター' },
+                    'walking': { icon: '🏰', description: '歩いて探索系' },
+                    'greeting': { icon: '👋', description: 'キャラクターグリーティング' },
+                    'other': { icon: '🎡', description: 'その他' }
+                };
+                
+                list.innerHTML = '';
+                Object.values(genreMap).forEach(genre => {
+                    const item = document.createElement('div');
+                    item.className = 'icon-annotation-item';
+                    item.innerHTML = `<strong>${genre.icon}</strong> ${genre.description}`;
+                    list.appendChild(item);
+                });
+                
+                list.classList.add('show');
+                link.textContent = '注釈を閉じる';
+            }
+        }
+
+        // 設定パネルの外側クリックで閉じる
+        document.addEventListener('DOMContentLoaded', () => {
+            const panel = document.getElementById('settingsPanel');
+            if (panel) {
+                // 初期状態で確実に非表示にする
+                panel.classList.add('hidden');
+                panel.addEventListener('click', (e) => {
+                    if (e.target === panel) {
+                        closeSettings();
+                    }
+                });
+            }
+            // 初期表示時にタイトルを設定
+            updateResultTitleDisplay();
+            // 初期表示時に背景スタイルを設定
+            const savedBackground = localStorage.getItem('backgroundStyle') || 'checkerboard';
+            document.body.classList.add(savedBackground);
+            
+            // 時間入力フィールドの初期値を検証
+            const startTimeInput = document.getElementById('startTime');
+            const exitTimeInput = document.getElementById('exitTimeInput');
+            if (startTimeInput) {
+                if (startTimeInput.value < OPERATING_HOURS.min || startTimeInput.value > OPERATING_HOURS.max) {
+                    startTimeInput.value = OPERATING_HOURS.min;
+                }
+            }
+            if (exitTimeInput) {
+                if (exitTimeInput.value < OPERATING_HOURS.min || exitTimeInput.value > OPERATING_HOURS.max) {
+                    exitTimeInput.value = OPERATING_HOURS.max;
+                }
+            }
+        });
+
+        // ルートクリア
+        function clearRoute() {
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+                routeLayer = null;
+            }
+            document.getElementById('resultBox').classList.add('hidden');
+        }
+
+        // 地図を画像としてダウンロード
+        async function downloadMapAsImage() {
+            if (!map) {
+                alert('地図が表示されていません');
+                return;
+            }
+
+            // html2canvasが読み込まれているか確認
+            if (typeof html2canvas === 'undefined') {
+                alert('画像保存機能を読み込んでいます。しばらく待ってから再度お試しください。');
+                // html2canvasを動的に読み込む
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                script.onload = () => {
+                    setTimeout(() => downloadMapAsImage(), 500);
+                };
+                script.onerror = () => {
+                    alert('画像保存機能の読み込みに失敗しました。ページをリロードしてお試しください。');
+                };
+                document.head.appendChild(script);
+                return;
+            }
+
+            try {
+                const mapContainer = document.querySelector('.park-map');
+                if (!mapContainer || !mapContainer.classList.contains('visible')) {
+                    alert('地図を表示してからダウンロードしてください');
+                    return;
+                }
+
+                // 地図コンテナを画像化
+                const canvas = await html2canvas(mapContainer, {
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    scale: 2, // 高解像度
+                    logging: false,
+                    allowTaint: true
+                });
+
+                // 画像をダウンロード
+                const link = document.createElement('a');
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                link.download = `route-map-${timestamp}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                // 成功メッセージ
+                const message = i18n[currentLanguage] && i18n[currentLanguage]['map-downloaded'] || '地図を画像として保存しました';
+                alert(message);
+            } catch (error) {
+                console.error('地図のダウンロードエラー:', error);
+                alert('地図の保存に失敗しました: ' + error.message);
+            }
+        }
+
+        // ルート順序をクリップボードにコピー
+        async function copyRouteToClipboard() {
+            const resultList = document.getElementById('resultList');
+            if (!resultList || resultList.children.length === 0) {
+                alert('ルートが表示されていません');
+                return;
+            }
+
+            try {
+                let routeText = '';
+                const listItems = resultList.querySelectorAll('li');
+                
+                listItems.forEach((item, index) => {
+                    const nameElement = item.querySelector('strong');
+                    const detailsElement = item.querySelector('div[style*="font-size"]');
+                    
+                    if (nameElement) {
+                        const name = nameElement.textContent.trim();
+                        routeText += `${index + 1}. ${name}\n`;
+                    }
+                    
+                    if (detailsElement) {
+                        const details = detailsElement.textContent.trim();
+                        routeText += `   ${details}\n`;
+                    }
+                    
+                    routeText += '\n';
+                });
+
+                // クリップボードにコピー
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(routeText);
+                    const message = i18n[currentLanguage] && i18n[currentLanguage]['route-copied'] || 'ルート順序をクリップボードにコピーしました';
+                    alert(message);
+                } else {
+                    // フォールバック: テキストエリアを使用
+                    const textarea = document.createElement('textarea');
+                    textarea.value = routeText;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    const message = i18n[currentLanguage] && i18n[currentLanguage]['route-copied'] || 'ルート順序をクリップボードにコピーしました';
+                    alert(message);
+                }
+            } catch (error) {
+                console.error('コピーエラー:', error);
+                const message = i18n[currentLanguage] && i18n[currentLanguage]['copy-failed'] || 'コピーに失敗しました';
+                alert(message);
+            }
+        }
+
+        // Firestoreからアトラクションメタデータを読み込む
+        async function loadAttractionsMetadata() {
+            try {
+                if (!window.db) {
+                    console.warn('Firestoreが初期化されていません');
+                    return;
+                }
+                const snapshot = await window.db.collection('attractions_metadata').get();
+                attractionsMetadata = {};
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    attractionsMetadata[data.official_id] = {
+                        duration_minutes: data.duration_minutes || null,
+                        genre: data.genre || ''
+                    };
+                });
+                console.log(`${Object.keys(attractionsMetadata).length}件のアトラクションメタデータを読み込みました`);
+            } catch (error) {
+                // 権限エラーの場合は警告のみ（メタデータなしでも動作可能）
+                if (error.code === 'permission-denied' || error.message.includes('permissions')) {
+                    console.warn('メタデータの読み込み権限がありません。デフォルト値を使用します。');
+                } else {
+                    console.error('メタデータの読み込みエラー:', error);
+                }
+            }
+        }
+
+        // Firestoreにアトラクションメタデータを保存（管理ページ用）
+        async function saveAttractionMetadata(officialId, durationMinutes, genre) {
+            try {
+                if (!window.db) {
+                    console.warn('Firestoreが初期化されていません');
+                    return false;
+                }
+                const user = window.auth ? window.auth.currentUser : null;
+                if (!user) {
+                    alert('ログインが必要です。');
+                    throw new Error('User not authenticated.');
+                }
+                await window.db.collection('attractions_metadata').doc(officialId).set({
+                    official_id: officialId,
+                    duration_minutes: durationMinutes ? parseInt(durationMinutes) : null,
+                    genre: genre || '',
+                    updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+                    updated_by: user.email || user.uid
+                }, { merge: true });
+                
+                // ローカルのメタデータも更新
+                attractionsMetadata[officialId] = {
+                    duration_minutes: durationMinutes ? parseInt(durationMinutes) : null,
+                    genre: genre || ''
+                };
+                
+                return true;
+            } catch (error) {
+                console.error('メタデータの保存エラー:', error);
+                throw error;
+            }
+        }
+
+
+        // 初期化
+        window.addEventListener('load', async () => {
+            // 言語を適用
+            document.documentElement.lang = currentLanguage;
+            applyLanguage();
+            updateLanguageLinks();
+            // Buy Me a Coffeeボタンのdata-text属性を更新（日本語以外の場合）
+            if (currentLanguage !== 'ja') {
+                updateSupportButton();
+            }
+            
+            await loadWaitingTimes();
+            await loadAttractionsMetadata();
+            await loadAttractionsFromDB();
+        });
+    </script>
+</body>
+</html>

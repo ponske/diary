@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>kakeevo</title>
+    <link rel="stylesheet" href="diary.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-top-row">
+                <div class="header-title-block">
+                    <h1 class="title" id="page-title">kakeevo</h1>
+                    <p class="subtitle">今日の「つかった」を、かわいく見える化。</p>
+                    <p class="user-name-display" id="user-name-display"></p>
+                </div>
+            </div>
+        </header>
+
+        <div class="diary-wrapper" id="kakeevo-wrapper">
+            <!-- 入力エリア -->
+            <div class="diary-editor">
+                <div class="editor-header">
+                    <h2>今日の支出を記録する</h2>
+                </div>
+                <div class="editor-content">
+                    <div class="kakeevo-input-row">
+                        <div class="master-field">
+                            <label for="expense-date">日付</label>
+                            <input type="date" id="expense-date" class="master-input">
+                        </div>
+                        <div class="master-field">
+                            <label for="expense-time">時間（任意）</label>
+                            <input type="time" id="expense-time" class="master-input">
+                        </div>
+                    </div>
+
+                    <div class="kakeevo-input-row">
+                        <div class="master-field">
+                            <label for="expense-amount">金額</label>
+                            <input type="number" id="expense-amount" class="master-input kakeevo-amount-input" min="0" step="1" placeholder="0">
+                        </div>
+                        <div class="master-field">
+                            <label for="expense-category">カテゴリ</label>
+                            <select id="expense-category" class="master-input kakeevo-category-select">
+                                <option value="食費">食費</option>
+                                <option value="昼ごはん/おやつ">昼ごはん/おやつ</option>
+                                <option value="交通">交通</option>
+                                <option value="日用品">日用品</option>
+                                <option value="衣服類">衣服類</option>
+                                <option value="美容">美容</option>
+                                <option value="外食/交友">外食/交友</option>
+                                <option value="家賃光熱費通信費">家賃光熱費通信費</option>
+                                <option value="趣味（サーバー）">趣味（サーバー）</option>
+                                <option value="ジム">ジム</option>
+                                <option value="雑誌">雑誌</option>
+                                <option value="旅行">旅行</option>
+                                <option value="保険医療">保険医療</option>
+                                <option value="自由医療">自由医療</option>
+                                <option value="セルフメディケーション">セルフメディケーション</option>
+                                <option value="サブすく">サブすく</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="master-field">
+                        <label for="expense-shop">お店（任意）</label>
+                        <input type="text" id="expense-shop" class="master-input" placeholder="例：スタバ〇〇店 / スーパー〇〇 など">
+                    </div>
+
+                    <div class="master-field">
+                        <label for="expense-memo">メモ（任意）</label>
+                        <input type="text" id="expense-memo" class="master-input" placeholder="何に使ったかメモしておくとあとでニコニコできるかも 🐰">
+                    </div>
+
+                    <div class="button-group" style="margin-top: 16px;">
+                        <button id="add-expense-btn" class="btn btn-save">支出を追加</button>
+                        <button id="clear-expense-form-btn" class="btn btn-clear">入力をクリア</button>
+                    </div>
+                    <p class="kakeevo-helper-text">金額・お店・メモ欄が選ばれているときに Enter キーでも登録できます ⌨️</p>
+                </div>
+            </div>
+
+            <!-- 一覧＆サマリ -->
+            <div class="diary-list">
+                <div class="list-header">
+                    <h2>今月のkakeevo</h2>
+                    <div class="list-header-actions">
+                        <span id="kakeevo-current-month" class="kakeevo-month-label"></span>
+                        <button id="go-diary-from-kakeevo-btn" class="btn btn-master" type="button">日記ページへ</button>
+                    </div>
+                </div>
+
+                <div class="kakeevo-summary">
+                    <div class="kakeevo-summary-card">
+                        <div class="kakeevo-summary-label">今月の支出合計</div>
+                        <div class="kakeevo-summary-value" id="kakeevo-total-amount">¥0</div>
+                    </div>
+                    <div class="kakeevo-summary-card">
+                        <div class="kakeevo-summary-label">一番つかってるカテゴリ</div>
+                        <div class="kakeevo-summary-value" id="kakeevo-top-category">-</div>
+                    </div>
+                </div>
+
+                <div class="kakeevo-charts-container">
+                    <div class="kakeevo-summary-card kakeevo-chart-card">
+                        <div class="kakeevo-summary-label" id="kakeevo-chart-label-current">今月の使用状況</div>
+                        <div class="kakeevo-chart-wrapper">
+                            <canvas id="kakeevo-chart-current" width="280" height="280"></canvas>
+                        </div>
+                        <div class="kakeevo-chart-stats" id="kakeevo-chart-stats-current"></div>
+                    </div>
+                    <div class="kakeevo-summary-card kakeevo-chart-card">
+                        <div class="kakeevo-summary-label" id="kakeevo-chart-label-last">先月の支出</div>
+                        <div class="kakeevo-chart-wrapper">
+                            <canvas id="kakeevo-chart-last" width="280" height="280"></canvas>
+                        </div>
+                        <div class="kakeevo-chart-stats" id="kakeevo-chart-stats-last"></div>
+                    </div>
+                    <div class="kakeevo-summary-card kakeevo-chart-card">
+                        <div class="kakeevo-summary-label" id="kakeevo-chart-label-2months">2か月前の支出</div>
+                        <div class="kakeevo-chart-wrapper">
+                            <canvas id="kakeevo-chart-2months" width="280" height="280"></canvas>
+                        </div>
+                        <div class="kakeevo-chart-stats" id="kakeevo-chart-stats-2months"></div>
+                    </div>
+                </div>
+
+                <!-- 共通凡例 -->
+                <div class="kakeevo-legend-container">
+                    <div class="kakeevo-summary-card">
+                        <div class="kakeevo-summary-label">カテゴリ凡例</div>
+                        <div id="kakeevo-legend" class="kakeevo-legend"></div>
+                    </div>
+                </div>
+
+                <div id="kakeevo-expenses" class="entries">
+                    <!-- 支出エントリーがここに表示されます -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <!-- Chart.js for pie chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="kakeevo.js"></script>
+</body>
+</html>
+
+
