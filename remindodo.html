@@ -12,15 +12,13 @@
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-top-row">
-                <div class="header-title-block">
-                    <h1 class="title" id="page-title">remindodo</h1>
-                    <p class="subtitle">やりたいことを、やりたいタイミングで。⏰</p>
-                    <p class="user-name-display" id="user-name-display"></p>
-                    <div style="margin-top: 10px;">
-                        <button id="logout-btn" class="btn btn-master" type="button" style="font-size: 0.9rem; padding: 6px 12px;">ログアウト</button>
-                    </div>
-                </div>
+            <h1 class="title" id="page-title">remindodo</h1>
+            <p class="subtitle">やりたいことを、やりたいタイミングで。⏰</p>
+            <p class="user-name-display" id="user-name-display"></p>
+            <div class="header-button-group">
+                <a href="diary.html" class="btn btn-master" type="button">日記帳</a>
+                <a href="kakeevo.html" class="btn btn-master" type="button">kakeevo</a>
+                <a href="maclog.html" class="btn btn-master" type="button">MacLog</a>
             </div>
         </header>
 
@@ -86,6 +84,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ログアウトボタン -->
+    <div class="logout-button-container">
+        <button id="logout-btn" class="btn btn-master logout-btn" type="button">ログアウト</button>
     </div>
 
     <!-- Firebase SDK -->

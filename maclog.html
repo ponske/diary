@@ -15,6 +15,11 @@
             <h1 class="title">MacLog</h1>
             <p class="subtitle">食べたもののカロリーを記録し、今日あと何を食べればいいかが常にわかる</p>
             <p class="user-name-display" id="user-name-display"></p>
+            <div class="header-button-group">
+                <a href="diary.html" class="btn btn-master" type="button">日記帳</a>
+                <a href="remindodo.html" class="btn btn-master" type="button">remindodo</a>
+                <a href="kakeevo.html" class="btn btn-master" type="button">kakeevo</a>
+            </div>
         </header>
 
         <!-- 今日の残り栄養素表示 -->
@@ -40,6 +45,18 @@
                     <div class="nutrient-label">カロリー</div>
                     <div class="nutrient-value" id="remaining-calorie">-</div>
                     <div class="nutrient-unit">kcal</div>
+                </div>
+            </div>
+            <div class="previous-days-summary">
+                <div class="previous-day-item">
+                    <div class="previous-day-label">昨日</div>
+                    <div class="previous-day-value" id="yesterday-calorie">-</div>
+                    <div class="previous-day-unit">kcal</div>
+                </div>
+                <div class="previous-day-item">
+                    <div class="previous-day-label">一昨日</div>
+                    <div class="previous-day-value" id="day-before-calorie">-</div>
+                    <div class="previous-day-unit">kcal</div>
                 </div>
             </div>
         </div>
@@ -95,7 +112,7 @@
                         <div class="form-group">
                             <label for="calc-food-name">食べ物の名前</label>
                             <div class="autocomplete-wrapper">
-                                <input type="text" id="calc-food-name" class="input" placeholder="例：白米" autocomplete="off" required>
+                                <input type="text" id="calc-food-name" class="input" placeholder="例：白米" autocomplete="off">
                                 <div id="calc-history-dropdown" class="history-dropdown"></div>
                             </div>
                         </div>
@@ -104,25 +121,25 @@
                         </div>
                         <div class="form-group">
                             <label for="calc-base-amount">基準量 (g)</label>
-                            <input type="number" id="calc-base-amount" class="input" step="0.1" min="0" placeholder="例：100" required>
+                            <input type="number" id="calc-base-amount" class="input" step="0.1" min="0" placeholder="例：100">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="calc-base-protein">基準タンパク質 (g)</label>
-                                <input type="number" id="calc-base-protein" class="input" step="0.1" min="0" placeholder="0" required>
+                                <input type="number" id="calc-base-protein" class="input" step="0.1" min="0" placeholder="0">
                             </div>
                             <div class="form-group">
                                 <label for="calc-base-fat">基準脂質 (g)</label>
-                                <input type="number" id="calc-base-fat" class="input" step="0.1" min="0" placeholder="0" required>
+                                <input type="number" id="calc-base-fat" class="input" step="0.1" min="0" placeholder="0">
                             </div>
                             <div class="form-group">
                                 <label for="calc-base-carb">基準炭水化物 (g)</label>
-                                <input type="number" id="calc-base-carb" class="input" step="0.1" min="0" placeholder="0" required>
+                                <input type="number" id="calc-base-carb" class="input" step="0.1" min="0" placeholder="0">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="calc-consumed-amount">実際の摂取量 (g)</label>
-                            <input type="number" id="calc-consumed-amount" class="input" step="0.1" min="0" placeholder="例：150" required>
+                            <input type="number" id="calc-consumed-amount" class="input" step="0.1" min="0" placeholder="例：150">
                         </div>
                         <div class="calc-result-box" id="calc-result-box" style="display: none;">
                             <h3>計算結果</h3>
@@ -231,6 +248,51 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- 編集モーダル -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>記録を編集</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <form id="edit-form" class="form">
+                <input type="hidden" id="edit-item-id">
+                <input type="hidden" id="edit-item-type">
+                <div class="form-group">
+                    <label for="edit-name">名前</label>
+                    <input type="text" id="edit-name" class="input" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-protein">タンパク質 (g)</label>
+                        <input type="number" id="edit-protein" class="input" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-fat">脂質 (g)</label>
+                        <input type="number" id="edit-fat" class="input" step="0.1" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-carb">炭水化物 (g)</label>
+                        <input type="number" id="edit-carb" class="input" step="0.1" min="0" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-date">日付</label>
+                    <input type="date" id="edit-date" class="input" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="delete-item-btn" class="btn btn-danger">削除</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ログアウトボタン -->
+    <div class="logout-button-container">
+        <button id="logout-btn" class="btn btn-master logout-btn" type="button">ログアウト</button>
     </div>
 
     <!-- Firebase SDK -->

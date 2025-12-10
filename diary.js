@@ -650,19 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         diaryManager = new DiaryManager(user);
         masterSettings = new MasterSettings();
 
-        const goRemindodoBtn = document.getElementById('go-remindodo-btn');
-        if (goRemindodoBtn) {
-            goRemindodoBtn.addEventListener('click', () => {
-                window.location.href = 'remindodo.html';
-            });
-        }
-
-        const goKakeevoBtn = document.getElementById('go-kakeevo-btn');
-        if (goKakeevoBtn) {
-            goKakeevoBtn.addEventListener('click', () => {
-                window.location.href = 'kakeevo.html';
-            });
-        }
+        // ナビゲーションボタンはリンク（<a>タグ）に変更したため、イベントリスナーは不要
     });
 });
 

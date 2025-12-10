@@ -12,12 +12,13 @@
 <body>
     <div class="container">
         <header class="header">
-            <div class="header-top-row">
-                <div class="header-title-block">
-                    <h1 class="title" id="page-title">kakeevo</h1>
-                    <p class="subtitle">今日の「つかった」を、かわいく見える化。</p>
-                    <p class="user-name-display" id="user-name-display"></p>
-                </div>
+            <h1 class="title" id="page-title">kakeevo</h1>
+            <p class="subtitle">今日の「つかった」を、かわいく見える化。</p>
+            <p class="user-name-display" id="user-name-display"></p>
+            <div class="header-button-group">
+                <a href="diary.html" class="btn btn-master" type="button">日記帳</a>
+                <a href="remindodo.html" class="btn btn-master" type="button">remindodo</a>
+                <a href="maclog.html" class="btn btn-master" type="button">MacLog</a>
             </div>
         </header>
 
@@ -143,6 +144,11 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ログアウトボタン -->
+    <div class="logout-button-container">
+        <button id="logout-btn" class="btn btn-master logout-btn" type="button">ログアウト</button>
     </div>
 
     <!-- Firebase SDK -->
