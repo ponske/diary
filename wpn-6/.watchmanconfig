@@ -1,0 +1,12 @@
+{
+  "ignore_dirs": [
+    "node_modules",
+    ".git",
+    ".expo",
+    ".expo-shared",
+    "dist",
+    "web-build"
+  ],
+  "settle": 20,
+  "max_files": 100000
+}

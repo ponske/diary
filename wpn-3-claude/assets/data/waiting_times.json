@@ -1,0 +1,230 @@
+[
+  {
+    "attr_id": "btb",
+    "waiting_minutes": 60,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 90},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 100},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 110},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 100},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 90},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 80},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 70},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 30}
+    ]
+  },
+  {
+    "attr_id": "baymax",
+    "waiting_minutes": 20,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 5}
+    ]
+  },
+  {
+    "attr_id": "pooh",
+    "waiting_minutes": 50,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 70},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 80},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 85},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 80},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 70},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 20}
+    ]
+  },
+  {
+    "attr_id": "space_mountain",
+    "waiting_minutes": 45,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 45},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 65},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 75},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 80},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 75},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 65},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 45},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 15}
+    ]
+  },
+  {
+    "attr_id": "big_thunder",
+    "waiting_minutes": 40,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 70},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 75},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 70},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 10}
+    ]
+  },
+  {
+    "attr_id": "splash",
+    "waiting_minutes": 55,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 75},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 85},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 90},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 85},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 75},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 65},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 45},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 25}
+    ]
+  },
+  {
+    "attr_id": "haunted",
+    "waiting_minutes": 25,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 15}
+    ]
+  },
+  {
+    "attr_id": "star_tours",
+    "waiting_minutes": 15,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 5},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 5},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 5}
+    ]
+  },
+  {
+    "attr_id": "monsters_inc",
+    "waiting_minutes": 30,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 45},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 45},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 10}
+    ]
+  },
+  {
+    "attr_id": "buzz",
+    "waiting_minutes": 25,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 55},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 10}
+    ]
+  },
+  {
+    "attr_id": "small_world",
+    "waiting_minutes": 20,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 15},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 10},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 5}
+    ]
+  },
+  {
+    "attr_id": "peter_pan",
+    "waiting_minutes": 35,
+    "updated_at": "2025-12-13T10:00:00+09:00",
+    "time_series": [
+      {"timestamp": "2025-12-13T09:00:00+09:00", "waiting_minutes": 20},
+      {"timestamp": "2025-12-13T10:00:00+09:00", "waiting_minutes": 35},
+      {"timestamp": "2025-12-13T11:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T12:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T13:00:00+09:00", "waiting_minutes": 65},
+      {"timestamp": "2025-12-13T14:00:00+09:00", "waiting_minutes": 60},
+      {"timestamp": "2025-12-13T15:00:00+09:00", "waiting_minutes": 50},
+      {"timestamp": "2025-12-13T16:00:00+09:00", "waiting_minutes": 45},
+      {"timestamp": "2025-12-13T17:00:00+09:00", "waiting_minutes": 40},
+      {"timestamp": "2025-12-13T18:00:00+09:00", "waiting_minutes": 30},
+      {"timestamp": "2025-12-13T19:00:00+09:00", "waiting_minutes": 25},
+      {"timestamp": "2025-12-13T20:00:00+09:00", "waiting_minutes": 15}
+    ]
+  }
+]

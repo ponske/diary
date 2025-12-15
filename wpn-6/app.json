@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "WonderPasNavi",
+    "slug": "wonderpasnavi-wpn-6",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/icon.png",
+      "backgroundColor": "#F6E8FF",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.wonderpasnavi.wpn6",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "作成した地図画像を写真ライブラリへ保存するために使用します。",
+        "NSPhotoLibraryAddUsageDescription": "作成した地図画像を写真ライブラリへ保存するために使用します。",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#6B46C1"
+      },
+      "package": "com.wonderpasnavi.wpn6"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "245df3f0-d395-4c63-84c0-e888b03df23e"
+      }
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}

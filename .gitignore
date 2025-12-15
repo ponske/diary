@@ -17,6 +17,18 @@ firebase-debug.*.log*
 # Firebase cache
 .firebase/
 
+# macOS / Finder
+.DS_Store
+**/.DS_Store
+
+# Expo / Metro
+**/.expo/
+**/.metro-health-check-*
+
+# Xcode user-specific
+**/xcuserdata/
+**/*.xcuserstate
+
 # Firebase config
 
 # Uncomment this if you'd like others to create their own Firebase project.

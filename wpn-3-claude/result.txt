@@ -1,0 +1,12 @@
+expoを使用して起動した
+アトラクションがピックされている
+Expo SDK 54の正式対応バージョンに合わせました：
+React: 18.3.1 → 19.1.0
+React Native: 0.81.0（維持）
+@types/react: ~18.3.0 → ~19.1.0
+これでExpo SDK 54と完全に互換性があります。
+
+babel-preset-expoはExpoプロジェクトに必須のBabel設定プリセットですが、package.jsonから抜けていました
+起動時のコマンド
+npm install
+npx start --clear

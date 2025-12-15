@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "WonderPasNavi",
+    "slug": "wonderpasnavi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.wonderpasnavi.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "このアプリは地図表示のために位置情報を使用します。"
+      }
+    },
+    "android": {
+      "package": "com.wonderpasnavi.app"
+    }
+  }
+}

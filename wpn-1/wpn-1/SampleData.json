@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "美女と野獣“魔法のものがたり”",
+    "translated_name": "Beauty and the Beast",
+    "official_id": "123",
+    "latitude": 35.6329,
+    "longitude": 139.8804,
+    "area_name": "ファンタジーランド",
+    "genre": "ride",
+    "icon": "🐻",
+    "duration_minutes": 20,
+    "is_seated": true,
+    "waiting_minutes": 30,
+    "is_active": true,
+    "is_invalid": false
+  }
+]
