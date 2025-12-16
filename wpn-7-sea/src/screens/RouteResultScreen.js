@@ -395,14 +395,14 @@ export default function RouteResultScreen({ route, navigation }) {
     }
 
     if (format === 'sns') {
-      text += `✨ ディズニーランドのルート ✨\n`;
+      text += `✨ ディズニーシーのルート ✨\n`;
       text += `開始: ${startTime}\n\n`;
       const onlyAttractions = items.filter((x) => x.type === 'attraction');
       for (const it of onlyAttractions.slice(0, 5)) {
         text += `${it.order}. ${it.attraction.name} ${minutesToTime(it.arrivalTimeMinutes)}\n`;
       }
       if (onlyAttractions.length > 5) text += `...他${onlyAttractions.length - 5}件\n`;
-      text += `\n#ディズニーランド #WonderPasNavi`;
+      text += `\n#ディズニーシー #WonderPasNavi`;
       return text;
     }
 

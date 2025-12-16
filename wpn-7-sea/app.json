@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "WonderPasNavi Sea",
+    "slug": "wonderpasnavi-wpn-7-sea",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/icon.png",
+      "backgroundColor": "#F6E8FF",
+      "resizeMode": "contain"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.wonderpasnavi.wpn7sea",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "作成した地図画像を写真ライブラリへ保存するために使用します。",
+        "NSPhotoLibraryAddUsageDescription": "作成した地図画像を写真ライブラリへ保存するために使用します。",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#6B46C1"
+      },
+      "package": "com.wonderpasnavi.wpn7sea"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}
